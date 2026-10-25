@@ -195,7 +195,7 @@ O app tem cinco abas:
 | **Revisão** | Edite títulos, textos, legendas, CTA, hashtags e fontes. Os slides se atualizam na hora. No celular, use o seletor **Editar / Prévia**. |
 | **Ideias** | Guarde temas e links para depois. O botão **Gerar a partir desta ideia** leva o tema para a aba Gerar. |
 | **Histórico** | As últimas 20 gerações. **Abrir na revisão** traz uma delas de volta. |
-| **Config** | Identidade visual (logo, cores, fonte, @), feeds RSS, padrões de geração e acesso à API. |
+| **Config** | Identidade visual (logo, cores, fonte, @), feeds RSS, padrões de geração, acesso à API e **backup dos dados**. |
 
 ### Exportar
 
@@ -215,6 +215,7 @@ Cada slide também tem um botão **Baixar PNG** próprio.
 - **Contador vermelho** = texto acima do limite. O slide reduz a fonte sozinho, mas o ideal é encurtar.
 - **Selo "verificar"** numa fonte = a URL não apareceu entre os sites consultados. Abra e confira antes de publicar.
 - O rascunho é salvo automaticamente no navegador; pode fechar e voltar depois.
+- **Descartar rascunho** (no topo da Revisão) limpa o carrossel atual para começar outro.
 
 ---
 
@@ -334,10 +335,10 @@ O que o projeto faz para se proteger:
 | Detalhes internos em mensagens de erro | O erro bruto da IA fica só no log do Worker; o usuário vê uma mensagem amigável |
 | Dados inventados pela IA | Prompt restritivo, selo "verificar" nas fontes e **revisão humana obrigatória** |
 
-**Privacidade (LGPD):** o app não coleta dados pessoais de terceiros e não tem rastreamento. Ideias, histórico e
-configurações ficam **só no navegador** de quem usa. Atenção: limpar os dados do navegador apaga essas
-informações. As fontes tipográficas são carregadas do Google Fonts, o que envia o endereço IP do visitante ao Google;
-servir as fontes pelo próprio app está registrado como melhoria pendente.
+**Privacidade (LGPD):** o app não coleta dados pessoais de terceiros, não tem rastreamento e não chama nenhum
+serviço de terceiros ao abrir: até as fontes tipográficas são servidas pelo próprio app (`frontend/public/fonts`).
+Ideias, histórico e configurações ficam **só no navegador** de quem usa. Limpar os dados do navegador apaga essas
+informações, então use **Config → Backup dos dados** de vez em quando (o token de acesso não vai no arquivo).
 
 Encontrou uma falha? Não abra issue pública com detalhes: avise o mantenedor diretamente.
 
@@ -389,7 +390,7 @@ Depois de mexer no `wrangler.toml`, publique o Worker de novo para valer em prod
 | "Não consegui ler" um feed | Site fora do ar ou bloqueando | Troque o feed na aba Config; a geração continua com os outros |
 | Fonte com selo "verificar" | A URL não estava entre os sites consultados | Abra e confira; troque se for o caso |
 | Texto pequeno ou apertado no slide | Texto acima do limite | Encurte até o contador ficar cinza |
-| Ideias e histórico sumiram | Dados do navegador foram limpos ou outro navegador | Os dados ficam só no navegador onde foram criados |
+| Ideias e histórico sumiram | Dados do navegador foram limpos ou outro navegador | Restaure um backup em **Config → Backup dos dados** |
 
 ---
 

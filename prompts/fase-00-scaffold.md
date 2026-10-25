@@ -76,8 +76,8 @@ Qualquer tela, rota além de `/api/health`, lógica de IA, RSS, canvas. Não use
      });
      ```
    - `frontend/index.html`: `lang="pt-BR"`, título "Pauta Pronta", `<div id="root">`, `<script type="module" src="/src/main.jsx">`,
-     e no `<head>` o link do Google Fonts carregando **Inter, Montserrat, Poppins, Lora e Merriweather** nos pesos 400 e 700
-     (um único `<link>` com `family=...&family=...&display=swap`, mais os dois `preconnect`).
+     e as fontes **Inter, Montserrat, Poppins, Lora e Merriweather** (400 e 700) servidas localmente de `frontend/public/fonts` via `src/fonts.css` — nunca do Google Fonts
+     (ver regra 11a).
    - `frontend/src/main.jsx`: monta `<App />` com `React.StrictMode` e importa `./styles.css`.
    - `frontend/src/App.jsx`: cabeçalho "Pauta Pronta" e uma barra de abas **Gerar · Revisão · Ideias · Histórico · Config**
      controlada por `useState('revisao')`. Cada aba mostra só um `<p>` "Em construção (fase N)". Sem router.

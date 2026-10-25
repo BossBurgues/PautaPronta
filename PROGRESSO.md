@@ -86,9 +86,11 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 - [x] Segurança: CSP (`frontend/public/_headers`), links só http(s), proteção contra prompt injection,
       tom em lista fixa, erro do Gemini só no log, token em tempo constante, verificação de fonte por domínio exato
 - [x] README didático e fluxo de branches `dev`/`prod`
-- Pendentes (baixa prioridade): servir fontes pelo próprio app (LGPD), backup/exportação de dados do navegador,
-  "Copiado!" falso no modo assistido, motivo do erro de feed na Revisão, exemplo de JSON fixo em 5 slides,
-  carregar jsPDF/JSZip sob demanda, limite de largura do logo, ideia marcada como usada por engano, acessibilidade das abas
+- [x] Pendências da auditoria: fontes servidas pelo próprio app (LGPD, CSP sem Google), backup/restauração dos dados,
+      aviso de cópia real no modo assistido, motivo do erro de feed, exemplo de JSON com o nº de slides pedido,
+      jsPDF/JSZip sob demanda (bundle 793→302 KB), logo limitado a 360×72, ideia "usada" só quando o tema dela é gerado,
+      aria-current/foco visível/menos animação, HTML escapado no RSS, fontes da busca web em "Fontes consultadas",
+      botão "Descartar rascunho"
 - [ ] **Validação humana**
 
 ## F8 — Deploy e entrega · `prompts/fase-08-deploy-entrega.md`

@@ -22,6 +22,8 @@ Você é o agente de código do projeto Pauta Pronta. Siga estas regras em toda 
    Segredos ficam só em `worker/.dev.vars` (local, ignorado pelo git) e `wrangler secret` (produção).
 9. Nunca peça ao usuário para colar a chave do Gemini no chat. Ele mesmo edita `worker/.dev.vars` ou roda `wrangler secret put`.
 10. Nunca ative billing, nunca sugira plano pago, nunca implemente publicação automática em redes sociais.
+11a. Não carregue nada de servidores de terceiros no navegador (Google Fonts, CDNs, analytics): fontes ficam em
+    `frontend/public/fonts` e a CSP de `frontend/public/_headers` bloqueia origens externas (LGPD).
 11. Não rode `wrangler deploy`, `wrangler pages deploy`, `wrangler login` ou `wrangler secret put` — esses são passos
     do usuário (fase 8). Você pode rodar `wrangler dev`.
 
