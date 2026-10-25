@@ -16,6 +16,8 @@ function cleanText(str) {
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
       String.fromCharCode(parseInt(hex, 16)),
     );
+  // Muitos feeds mandam o HTML escapado (&lt;p&gt;): depois de decodificar, as tags reaparecem.
+  s = s.replace(/<[^>]+>/g, ' ');
   return s.replace(/\s+/g, ' ').trim();
 }
 

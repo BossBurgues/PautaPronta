@@ -62,4 +62,10 @@ describe('worker/rss', () => {
     const xml = '<rss><channel><item><title>Ataque</title><link>javascript:alert(1)</link></item></channel></rss>';
     expect(parseFeed(xml, 'https://feed.com/rss')[0].link).toBe('');
   });
+
+  it('remove tags de HTML escapado no resumo', () => {
+    const xml = '<rss><channel><item><title>T</title><link>https://a.com/1</link>'
+      + '<description>&lt;p&gt;Texto &lt;b&gt;forte&lt;/b&gt;&lt;/p&gt;</description></item></channel></rss>';
+    expect(parseFeed(xml, 'https://a.com/rss')[0].summary).toBe('Texto forte');
+  });
 });

@@ -12,14 +12,18 @@ export const RULES = `Regras obrigatórias:
 - O primeiro slide tem role 'capa', o último 'conclusao', o segundo 'contexto' e os demais 'ponto'.
 - Escreva em português do Brasil.`;
 
-export const JSON_SHAPE = `{
+// Exemplo do formato esperado, com exatamente `slideCount` slides (o modelo copia o exemplo:
+// um exemplo fixo de 5 slides fazia a IA ignorar pedidos de 4, 6 ou 7).
+export function jsonShape(slideCount = 5) {
+  const count = Math.min(7, Math.max(4, Number(slideCount) || 5));
+  const slides = Array.from({ length: count }, (_, i) => {
+    const role = i === 0 ? 'capa' : i === count - 1 ? 'conclusao' : i === 1 ? 'contexto' : 'ponto';
+    return `    { "n": ${i + 1}, "role": "${role}", "title": "string", "body": "string" }`;
+  }).join(',\n');
+  return `{
   "topic": "string",
   "slides": [
-    { "n": 1, "role": "capa", "title": "string", "body": "string" },
-    { "n": 2, "role": "contexto", "title": "string", "body": "string" },
-    { "n": 3, "role": "ponto", "title": "string", "body": "string" },
-    { "n": 4, "role": "ponto", "title": "string", "body": "string" },
-    { "n": 5, "role": "conclusao", "title": "string", "body": "string" }
+${slides}
   ],
   "caption_linkedin": "string",
   "caption_instagram": "string",
@@ -30,6 +34,9 @@ export const JSON_SHAPE = `{
     { "title": "string", "url": "https://..." }
   ]
 }`;
+}
+
+export const JSON_SHAPE = jsonShape(5);
 
 export const GEMINI_SUGGESTIONS_SCHEMA = {
   type: 'OBJECT',
@@ -123,7 +130,7 @@ ${sourcesText}`;
   if (useWebSearch) {
     prompt += `\n\nPesquise na web em fontes confiáveis e cite as URLs reais encontradas.
 Responda com um único objeto JSON neste formato, sem texto antes ou depois:
-${JSON_SHAPE}`;
+${jsonShape(slideCount)}`;
   }
 
   return prompt;
@@ -159,7 +166,7 @@ TEMA: ${theme}
 SLIDES: ${slideCount}
 
 Responda SOMENTE com um bloco de código \`\`\`json
-${JSON_SHAPE}
+${jsonShape(slideCount)}
 \`\`\``;
 }
 

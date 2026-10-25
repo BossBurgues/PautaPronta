@@ -79,11 +79,9 @@ export function buildUsedSources(items = [], grounding = []) {
 
   for (const g of grounding || []) {
     const url = g?.uri ? g.uri.trim() : '';
-    if (
-      url &&
-      !url.includes('vertexaisearch.cloud.google.com') &&
-      !seen.has(url)
-    ) {
+    // Os links da busca do Gemini são redirecionamentos do Google (vertexaisearch...), mas levam à
+    // página real; entram na lista de consultadas, com o domínio como título.
+    if (url && /^https:\/\//i.test(url) && !seen.has(url)) {
       seen.add(url);
       result.push({ title: g.title || '', url });
     }
