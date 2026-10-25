@@ -1,0 +1,18 @@
+{
+  "topic": "LGPD na prática",
+  "slides": [
+    { "n": 1, "role": "capa", "title": "LGPD na prática: o essencial para sua empresa", "body": "Um resumo direto da Lei Geral de Proteção de Dados e do que ela muda no dia a dia." },
+    { "n": 2, "role": "contexto", "title": "O que é a LGPD", "body": "A Lei nº 13.709/2018 regula o tratamento de dados pessoais no Brasil, em meios físicos e digitais, por empresas e órgãos públicos." },
+    { "n": 3, "role": "ponto", "title": "Todo tratamento precisa de uma base legal", "body": "O art. 7º lista as hipóteses que autorizam o tratamento, como consentimento, cumprimento de obrigação legal e execução de contrato." },
+    { "n": 4, "role": "ponto", "title": "O titular tem direitos garantidos", "body": "Pelo art. 18, a pessoa pode pedir confirmação, acesso, correção e eliminação dos seus dados, entre outros direitos." },
+    { "n": 5, "role": "conclusao", "title": "Quem fiscaliza e o que está em jogo", "body": "A ANPD fiscaliza a lei. A multa simples pode chegar a 2% do faturamento, limitada a R$ 50 milhões por infração (art. 52)." }
+  ],
+  "caption_linkedin": "A LGPD já faz parte da rotina de qualquer empresa que lida com dados pessoais, de clientes a colaboradores. Neste carrossel, reuni os pontos essenciais da Lei nº 13.709/2018: o que ela regula, por que toda operação precisa de uma base legal, quais direitos o titular pode exercer e quem fiscaliza o cumprimento. Um bom ponto de partida para revisar processos internos.",
+  "caption_instagram": "LGPD sem complicação: o que é, base legal, direitos do titular e fiscalização. Arrasta pro lado e salva pra consultar depois.",
+  "hashtags": ["#LGPD", "#ProtecaoDeDados", "#Compliance", "#Privacidade"],
+  "cta": "Sua empresa já mapeou quais dados pessoais trata hoje?",
+  "sources": [
+    { "title": "Lei nº 13.709/2018 (LGPD) — Planalto", "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" },
+    { "title": "Autoridade Nacional de Proteção de Dados (ANPD)", "url": "https://www.gov.br/anpd/pt-br" }
+  ]
+}

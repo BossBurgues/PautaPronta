@@ -1,0 +1,19 @@
+{
+  "name": "pauta-pronta",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "worker"
+  ],
+  "scripts": {
+    "dev:front": "npm run dev -w frontend",
+    "dev:worker": "npm run dev -w worker",
+    "build": "npm run build -w frontend",
+    "test": "vitest run",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.4"
+  }
+}

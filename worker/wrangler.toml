@@ -1,0 +1,18 @@
+name = "pauta-pronta-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[triggers]
+crons = ["0 9 * * 1"]
+
+# Local: qualquer id funciona. Na fase 8 o usuário troca pelo id real.
+[[kv_namespaces]]
+binding = "KV"
+id = "local-dev-placeholder"
+
+[vars]
+GEMINI_MODEL = "gemini-2.5-flash"
+DAILY_LIMIT = "20"
+ALLOWED_ORIGIN = "http://localhost:5173"
+TOPICS = "inteligência artificial, inovação, sustentabilidade, gestão, conformidade"
+DEFAULT_FEEDS = "https://www.technologyreview.com/feed/,https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml"
