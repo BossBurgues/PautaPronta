@@ -54,4 +54,16 @@ describe('worker/sources', () => {
     expect(used[0].url).toBe('https://fonte.com/1');
     expect(used[1].url).toBe('https://fonte.com/2');
   });
+
+  it('não verifica domínio que só termina com o mesmo texto (netflix.com x x.com)', () => {
+    const sources = [{ title: 'Falsa', url: 'https://netflix.com/a' }];
+    const grounding = [{ title: 'x.com', uri: 'https://vertexaisearch.cloud.google.com/1' }];
+    expect(verifySources(sources, { items: [], grounding })[0].verified).toBe(false);
+  });
+
+  it('verifica subdomínio do domínio citado no grounding', () => {
+    const sources = [{ title: 'ANPD', url: 'https://www.gov.br/anpd' }];
+    const grounding = [{ title: 'gov.br', uri: 'https://vertexaisearch.cloud.google.com/1' }];
+    expect(verifySources(sources, { items: [], grounding })[0].verified).toBe(true);
+  });
 });

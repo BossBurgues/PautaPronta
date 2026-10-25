@@ -57,4 +57,9 @@ describe('worker/rss', () => {
     expect(items[0].source).toBe('cidades.org');
     expect(items[0].date).toBe(Date.parse('2026-10-10T15:30:00Z'));
   });
+
+  it('descarta link que não é http(s) (ex.: javascript:)', () => {
+    const xml = '<rss><channel><item><title>Ataque</title><link>javascript:alert(1)</link></item></channel></rss>';
+    expect(parseFeed(xml, 'https://feed.com/rss')[0].link).toBe('');
+  });
 });

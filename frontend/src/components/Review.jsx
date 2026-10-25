@@ -90,9 +90,13 @@ export default function Review({
               <ul className="consulted-sources-list">
                 {usedSources.map((src, i) => (
                   <li key={i}>
-                    <a href={src.url} target="_blank" rel="noopener noreferrer">
-                      {src.title || src.url}
-                    </a>
+                    {/^https?:\/\//i.test(src.url || '') ? (
+                      <a href={src.url} target="_blank" rel="noopener noreferrer">
+                        {src.title || src.url}
+                      </a>
+                    ) : (
+                      <span>{src.title || src.url}</span>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -105,6 +105,9 @@ export function parseFeed(xml, feedUrl = '') {
       date = isNaN(parsed) ? 0 : parsed;
     }
 
+    // Links vão para href no front: só http(s); javascript:, data: etc. são descartados.
+    if (!/^https?:\/\//i.test(link)) link = '';
+
     items.push({
       title,
       summary,
