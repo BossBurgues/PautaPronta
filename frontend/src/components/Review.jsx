@@ -65,6 +65,17 @@ export default function Review({
         <div className="review-top-actions">
           <button
             type="button"
+            className="btn-danger-outline"
+            onClick={() => {
+              if (window.confirm('Descartar este rascunho? As edições não salvas no histórico serão perdidas.')) {
+                setContent(null);
+              }
+            }}
+          >
+            Descartar rascunho
+          </button>
+          <button
+            type="button"
             className="primary"
             onClick={addSlide}
             disabled={!canAddSlide}
@@ -108,7 +119,9 @@ export default function Review({
                   {feedErrors.map((err, i) => (
                     <li key={i}>
                       <code>{typeof err === 'object' ? err.url : err}</code>
-                      {typeof err === 'object' && err.error ? ` — ${err.error}` : ''}
+                      {typeof err === 'object' && (err.message || err.error)
+                        ? ` — ${err.message || err.error}`
+                        : ''}
                     </li>
                   ))}
                 </ul>

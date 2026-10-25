@@ -1789,3 +1789,30 @@ details[open] .summary-toggle-icon {
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
+
+/* Acessibilidade: foco visível para quem navega pelo teclado */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Respeita quem pediu ao sistema menos animação */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.review-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

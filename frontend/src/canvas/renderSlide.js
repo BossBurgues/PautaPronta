@@ -374,10 +374,11 @@ export function renderSlide(
 
   // Logo à esquerda
   if (logoImg && logoImg.width > 0 && logoImg.height > 0) {
-    const maxLogoH = 72;
-    const aspect = logoImg.width / logoImg.height;
-    const logoW = maxLogoH * aspect;
-    ctx.drawImage(logoImg, marginX, footerY - maxLogoH, logoW, maxLogoH);
+    // Cabe numa caixa de 360×72 mantendo a proporção: logo horizontal não invade o @ e a numeração.
+    const scale = Math.min(72 / logoImg.height, 360 / logoImg.width);
+    const logoW = logoImg.width * scale;
+    const logoH = logoImg.height * scale;
+    ctx.drawImage(logoImg, marginX, footerY - logoH, logoW, logoH);
     handleX += logoW + 20;
   }
 
