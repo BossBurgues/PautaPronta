@@ -31,7 +31,10 @@ Exportação (fase 3), chamada de API (fase 5), tela Config completa (fase 6). N
   ```
 - `useDraft.js`: hook que guarda o `content` em edição, carrega de `pp:draft` (ou `null`), e salva com debounce de 500 ms.
   Expõe `content`, `setContent`, `updateSlide(index, patch)`, `updateField(name, value)`, `addSlide()`, `removeSlide(index)`.
-  Todas as atualizações passam por `normalizeContent` de `shared/schema.js` para renumerar slides.
+  As edições ficam em funções puras em `state/draftOps.js` (com teste). **Não** passe as edições por
+  `normalizeContent`: ele apara espaços e descarta fontes sem URL, o que impede digitar e adicionar fonte.
+  Use `normalizeContent` só em `setContent` (conteúdo vindo da API, do modo assistido ou do histórico);
+  nas edições, apenas renumere `n` ao adicionar/remover slide e normalize as hashtags quando vierem como texto.
   `addSlide` insere um slide `ponto` vazio antes da conclusão; bloqueia acima de 7. `removeSlide` bloqueia abaixo de 4.
 
 ### 2. Render — `frontend/src/canvas/renderSlide.js`

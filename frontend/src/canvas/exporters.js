@@ -1,5 +1,4 @@
-import JSZip from 'jszip';
-import { jsPDF } from 'jspdf';
+// jszip e jspdf são grandes (~600 KB): carregados só quando o usuário exporta (import dinâmico).
 import { SLIDE_W, SLIDE_H, ensureFonts, renderSlide } from './renderSlide.js';
 
 /**
@@ -81,6 +80,7 @@ export function downloadBlob(blob, filename) {
  * Exporta todos os slides em um arquivo ZIP contendo PNGs individuais (1080×1350).
  */
 export async function exportPngZip(content, profile, logoImg) {
+  const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
   const slug = slugify(content?.topic);
   const slides = content?.slides || [];
@@ -105,6 +105,7 @@ export async function exportPdf(content, profile, logoImg) {
   const slug = slugify(content?.topic);
   const filename = `pauta-pronta-${slug}.pdf`;
 
+  const { jsPDF } = await import('jspdf');
   const pdf = new jsPDF({
     orientation: 'portrait',
     unit: 'px',

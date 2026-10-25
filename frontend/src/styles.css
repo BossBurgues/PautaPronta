@@ -67,6 +67,17 @@ body {
   gap: 8px;
   border-bottom: 1px solid var(--border);
   margin-bottom: calc(var(--gap) * 1.5);
+  /* No celular as 5 abas não cabem: rola na horizontal em vez de sair da tela */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-button {
+  flex-shrink: 0;
 }
 
 .tab-button {
@@ -284,9 +295,53 @@ body {
   align-items: start;
 }
 
+/* Seletor Editar / Prévia: só aparece quando as colunas empilham */
+.review-mobile-switch {
+  display: none;
+}
+
 @media (max-width: 960px) {
   .review-workspace {
     grid-template-columns: 1fr;
+  }
+
+  .review-mobile-switch {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .review-mobile-switch button {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .review-mobile-switch button.active {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .review-workspace.mobile-view-editar .review-preview-column,
+  .review-workspace.mobile-view-previa .review-editor-column {
+    display: none;
+  }
+
+  .review-preview-column {
+    position: static;
   }
 }
 
@@ -320,9 +375,19 @@ body {
 
 .slide-editor-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 12px;
+}
+
+.slide-badge {
+  white-space: nowrap;
+}
+
+.slide-role-select {
+  min-width: 120px;
 }
 
 .slide-badge {
@@ -1723,4 +1788,31 @@ details[open] .summary-toggle-icon {
   flex-wrap: wrap;
   padding-top: 8px;
   border-top: 1px solid var(--border);
+}
+
+/* Acessibilidade: foco visível para quem navega pelo teclado */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Respeita quem pediu ao sistema menos animação */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.review-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

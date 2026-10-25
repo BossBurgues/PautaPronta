@@ -18,7 +18,7 @@ App publicado no Cloudflare (Pages + Worker) no plano Free, com README de manute
 1. `package.json` da raiz, scripts:
    ```json
    "deploy:worker": "npm run deploy -w worker",
-   "deploy:front": "npm run build && npx wrangler pages deploy frontend/dist --project-name pauta-pronta --branch main"
+   "deploy:front": "npm run build && npx wrangler pages deploy frontend/dist --project-name pauta-pronta --branch prod"
    ```
 2. `frontend/.env.production.example` com `VITE_API_URL=https://pauta-pronta-api.<subdominio>.workers.dev`
    (o usuário copia para `frontend/.env.production` com a URL real — não é segredo, é só o endereço público da API).
@@ -55,7 +55,7 @@ npm run deploy:worker
 ```
 → anotar a URL `https://pauta-pronta-api.<subdominio>.workers.dev`, criar `frontend/.env.production` com ela.
 ```bash
-npx wrangler pages project create pauta-pronta --production-branch main
+npx wrangler pages project create pauta-pronta --production-branch prod
 npm run deploy:front
 ```
 → anotar a URL do Pages, colocar em `ALLOWED_ORIGIN` no `wrangler.toml` e rodar `npm run deploy:worker` de novo.

@@ -8,9 +8,11 @@ import { buildPrompt, buildFixPrompt } from '../../shared/prompt.js';
 
 export class QuotaError extends Error {}
 export class AiError extends Error {
-  constructor(message, status) {
+  // detail: texto bruto do Gemini, só para log (pode conter ID do projeto Google).
+  constructor(message, status, detail = '') {
     super(message);
     this.status = status;
+    this.detail = detail;
   }
 }
 export class AiOutputError extends Error {
@@ -56,11 +58,9 @@ export async function callGemini({
   }
 
   if (!res.ok) {
-    const detail = await res.text();
-    throw new AiError(
-      `Gemini respondeu ${res.status}: ${detail.slice(0, 300)}`,
-      res.status,
-    );
+    const detail = (await res.text()).slice(0, 300);
+    console.error(`[gemini] HTTP ${res.status}: ${detail}`);
+    throw new AiError(`A IA respondeu com erro (HTTP ${res.status}). Tente de novo em instantes.`, res.status, detail);
   }
 
   const data = await res.json();

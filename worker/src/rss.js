@@ -16,6 +16,8 @@ function cleanText(str) {
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
       String.fromCharCode(parseInt(hex, 16)),
     );
+  // Muitos feeds mandam o HTML escapado (&lt;p&gt;): depois de decodificar, as tags reaparecem.
+  s = s.replace(/<[^>]+>/g, ' ');
   return s.replace(/\s+/g, ' ').trim();
 }
 
@@ -104,6 +106,9 @@ export function parseFeed(xml, feedUrl = '') {
       const parsed = Date.parse(rawDate);
       date = isNaN(parsed) ? 0 : parsed;
     }
+
+    // Links vão para href no front: só http(s); javascript:, data: etc. são descartados.
+    if (!/^https?:\/\//i.test(link)) link = '';
 
     items.push({
       title,

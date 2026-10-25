@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { buildAssistedPrompt, buildFixPrompt } from '../../../shared/prompt.js';
 import { extractJson } from '../../../shared/json.js';
 import { normalizeContent, validateContent } from '../../../shared/schema.js';
+import { copyText } from '../canvas/exporters.js';
 
 export default function AssistedPanel({
   theme = '',
@@ -11,8 +12,8 @@ export default function AssistedPanel({
   onSuccess,
   onBack,
 }) {
-  const [copiedPrompt, setCopiedPrompt] = useState(false);
-  const [copiedFix, setCopiedFix] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(null);
+  const [copiedFix, setCopiedFix] = useState(null);
   const [pastedText, setPastedText] = useState('');
   const [validationErrors, setValidationErrors] = useState([]);
 
@@ -26,29 +27,19 @@ export default function AssistedPanel({
     });
   }, [theme, slideCount, tone, feedUrls]);
 
+  // 'ok' | 'erro' | null — o aviso só diz "copiado" quando a cópia funcionou de verdade.
+  const flash = (setter, result) => {
+    setter(result ? 'ok' : 'erro');
+    setTimeout(() => setter(null), 2500);
+  };
+
   const handleCopyPrompt = async () => {
-    try {
-      await navigator.clipboard.writeText(assistedPrompt);
-      setCopiedPrompt(true);
-      setTimeout(() => setCopiedPrompt(false), 2500);
-    } catch {
-      // Fallback simples
-      setCopiedPrompt(true);
-      setTimeout(() => setCopiedPrompt(false), 2500);
-    }
+    flash(setCopiedPrompt, await copyText(assistedPrompt));
   };
 
   const handleCopyFix = async () => {
     if (validationErrors.length === 0) return;
-    const fixText = buildFixPrompt(validationErrors);
-    try {
-      await navigator.clipboard.writeText(fixText);
-      setCopiedFix(true);
-      setTimeout(() => setCopiedFix(false), 2500);
-    } catch {
-      setCopiedFix(true);
-      setTimeout(() => setCopiedFix(false), 2500);
-    }
+    flash(setCopiedFix, await copyText(buildFixPrompt(validationErrors)));
   };
 
   const handleApplyResponse = () => {
@@ -124,7 +115,7 @@ export default function AssistedPanel({
               className="primary btn-copy-prompt"
               onClick={handleCopyPrompt}
             >
-              {copiedPrompt ? '✓ Prompt copiado!' : 'Copiar prompt'}
+              {copiedPrompt === 'ok' ? '✓ Prompt copiado!' : copiedPrompt === 'erro' ? 'Não consegui copiar — selecione e copie' : 'Copiar prompt'}
             </button>
           </div>
         </div>
@@ -172,7 +163,7 @@ export default function AssistedPanel({
               className="btn-copy-fix"
               onClick={handleCopyFix}
             >
-              {copiedFix ? '✓ Pedido de correção copiado!' : 'Copiar pedido de correção'}
+              {copiedFix === 'ok' ? '✓ Pedido de correção copiado!' : copiedFix === 'erro' ? 'Não consegui copiar — selecione e copie' : 'Copiar pedido de correção'}
             </button>
           </div>
           <ul className="assisted-errors-list">

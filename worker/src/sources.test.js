@@ -46,12 +46,26 @@ describe('worker/sources', () => {
     const grounding = [
       { title: 'Item 1 Repetido', uri: 'https://fonte.com/1' },
       { title: 'Item 2 Grounding', uri: 'https://fonte.com/2' },
-      { title: 'Ignorar Vertex', uri: 'https://vertexaisearch.cloud.google.com/redirect' },
+      { title: 'gov.br', uri: 'https://vertexaisearch.cloud.google.com/redirect' },
+      { title: 'Perigoso', uri: 'javascript:alert(1)' },
     ];
 
     const used = buildUsedSources(items, grounding);
-    expect(used).toHaveLength(2);
+    expect(used).toHaveLength(3);
     expect(used[0].url).toBe('https://fonte.com/1');
     expect(used[1].url).toBe('https://fonte.com/2');
+    expect(used[2]).toEqual({ title: 'gov.br', url: 'https://vertexaisearch.cloud.google.com/redirect' });
+  });
+
+  it('não verifica domínio que só termina com o mesmo texto (netflix.com x x.com)', () => {
+    const sources = [{ title: 'Falsa', url: 'https://netflix.com/a' }];
+    const grounding = [{ title: 'x.com', uri: 'https://vertexaisearch.cloud.google.com/1' }];
+    expect(verifySources(sources, { items: [], grounding })[0].verified).toBe(false);
+  });
+
+  it('verifica subdomínio do domínio citado no grounding', () => {
+    const sources = [{ title: 'ANPD', url: 'https://www.gov.br/anpd' }];
+    const grounding = [{ title: 'gov.br', uri: 'https://vertexaisearch.cloud.google.com/1' }];
+    expect(verifySources(sources, { items: [], grounding })[0].verified).toBe(true);
   });
 });

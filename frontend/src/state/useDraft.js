@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { LIMITS, normalizeContent } from '../../../shared/schema.js';
+import { normalizeContent } from '../../../shared/schema.js';
 import { load, save } from './storage.js';
+import { patchSlide, setField, insertSlide, deleteSlide } from './draftOps.js';
 
 const DRAFT_KEY = 'draft';
 
@@ -43,48 +44,19 @@ export function useDraft() {
   }, []);
 
   const updateSlide = useCallback((index, patch) => {
-    setContentState((prev) => {
-      if (!prev || !Array.isArray(prev.slides)) return prev;
-      const newSlides = prev.slides.map((slide, i) =>
-        i === index ? { ...slide, ...patch } : slide,
-      );
-      return normalizeContent({ ...prev, slides: newSlides });
-    });
+    setContentState((prev) => patchSlide(prev, index, patch));
   }, []);
 
   const updateField = useCallback((name, value) => {
-    setContentState((prev) => {
-      if (!prev) return prev;
-      return normalizeContent({ ...prev, [name]: value });
-    });
+    setContentState((prev) => setField(prev, name, value));
   }, []);
 
   const addSlide = useCallback(() => {
-    setContentState((prev) => {
-      if (!prev || !Array.isArray(prev.slides)) return prev;
-      if (prev.slides.length >= LIMITS.slidesMax) return prev;
-
-      const newSlides = [...prev.slides];
-      // Insere um slide ponto antes da conclusão
-      const insertIndex = Math.max(0, newSlides.length - 1);
-      newSlides.splice(insertIndex, 0, {
-        role: 'ponto',
-        title: '',
-        body: '',
-      });
-
-      return normalizeContent({ ...prev, slides: newSlides });
-    });
+    setContentState((prev) => insertSlide(prev));
   }, []);
 
   const removeSlide = useCallback((index) => {
-    setContentState((prev) => {
-      if (!prev || !Array.isArray(prev.slides)) return prev;
-      if (prev.slides.length <= LIMITS.slidesMin) return prev;
-
-      const newSlides = prev.slides.filter((_, i) => i !== index);
-      return normalizeContent({ ...prev, slides: newSlides });
-    });
+    setContentState((prev) => deleteSlide(prev, index));
   }, []);
 
   return {

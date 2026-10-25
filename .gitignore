@@ -10,3 +10,4 @@ dist/
 # Documentos acadêmicos locais (dados pessoais; não versionar em repo público)
 dosc/
 *.pdf
+*.docx

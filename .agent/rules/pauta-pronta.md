@@ -22,6 +22,8 @@ Você é o agente de código do projeto Pauta Pronta. Siga estas regras em toda 
    Segredos ficam só em `worker/.dev.vars` (local, ignorado pelo git) e `wrangler secret` (produção).
 9. Nunca peça ao usuário para colar a chave do Gemini no chat. Ele mesmo edita `worker/.dev.vars` ou roda `wrangler secret put`.
 10. Nunca ative billing, nunca sugira plano pago, nunca implemente publicação automática em redes sociais.
+11a. Não carregue nada de servidores de terceiros no navegador (Google Fonts, CDNs, analytics): fontes ficam em
+    `frontend/public/fonts` e a CSP de `frontend/public/_headers` bloqueia origens externas (LGPD).
 11. Não rode `wrangler deploy`, `wrangler pages deploy`, `wrangler login` ou `wrangler secret put` — esses são passos
     do usuário (fase 8). Você pode rodar `wrangler dev`.
 
@@ -38,6 +40,13 @@ Você é o agente de código do projeto Pauta Pronta. Siga estas regras em toda 
 19. Use o navegador do Antigravity para abrir `http://localhost:5173` quando a fase tiver UI, e tire screenshot.
 20. Atualize `PROGRESSO.md`: marque `[x]` só no que foi realmente verificado. Não marque a validação humana.
 
+## Git (branches `dev` e `prod`)
+21. Comece cada tarefa numa branch nova a partir de `dev` (`fix/...`, `feat/...`, `docs/...`). Nunca commite direto em
+    `dev` nem em `prod`; nunca faça `push --force` nessas duas.
+22. Commits pequenos com prefixo (`feat:`, `fix:`, `docs:`, `test:`, `chore:`). Antes de commitar: `npm test`, `npm run build`
+    e `git diff --check`.
+23. Merge em `dev` e em `prod` é feito pelo usuário via Pull Request. Você pode abrir o PR, não fazer o merge.
+
 ## Ambiente
-21. Windows. Use comandos que funcionem no PowerShell ou no terminal integrado. Caminhos com `/` funcionam no Node.
-22. Não rode comandos interativos que esperam resposta (geradores com perguntas). Crie os arquivos à mão.
+24. Windows. Use comandos que funcionem no PowerShell ou no terminal integrado. Caminhos com `/` funcionam no Node.
+25. Não rode comandos interativos que esperam resposta (geradores com perguntas). Crie os arquivos à mão.

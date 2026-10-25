@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { normalizeContent, validateContent } from '../../shared/schema.js';
 import { extractJson } from '../../shared/json.js';
+import { TONES } from '../../shared/prompt.js';
 import { fetchFeeds } from './rss.js';
 import {
   generateCarousel,
@@ -75,7 +76,7 @@ app.post('/api/generate', async (c) => {
     );
   }
 
-  const tone = body.tone || 'profissional-didatico';
+  const tone = Object.hasOwn(TONES, body.tone) ? body.tone : 'profissional-didatico';
   const useWebSearch = Boolean(body.useWebSearch);
 
   const rawSources = Array.isArray(body.sources) ? body.sources : [];
@@ -153,7 +154,7 @@ app.post('/api/generate', async (c) => {
 
     if (err instanceof AiError) {
       let msg = err.message;
-      if (err.status === 400 && /API key/i.test(err.message)) {
+      if (err.status === 400 && /API key/i.test(err.detail || '')) {
         msg = 'Chave do Gemini inválida. Confira o .dev.vars / secret.';
       }
       return fail(c, 502, 'ai_error', msg, { fallbackToAssisted: true });
@@ -303,7 +304,7 @@ app.post('/api/suggestions/run', async (c) => {
 
     if (err instanceof AiError) {
       let msg = err.message;
-      if (err.status === 400 && /API key/i.test(err.message)) {
+      if (err.status === 400 && /API key/i.test(err.detail || '')) {
         msg = 'Chave do Gemini inválida. Confira o .dev.vars / secret.';
       }
       return fail(c, 502, 'ai_error', msg, { fallbackToAssisted: true });
