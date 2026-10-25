@@ -80,6 +80,17 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 - [x] Cron testado localmente
 - [ ] **Validação humana**
 
+## Auditoria (25/10/2026) — branch `fix/auditoria-edicao-mobile-seguranca`
+- [x] Editor aceita espaço/Enter no fim do texto e "Adicionar fonte" (state/draftOps.js + testes)
+- [x] Celular: seletor Editar/Prévia, abas com rolagem, seletor de papel sem corte
+- [x] Segurança: CSP (`frontend/public/_headers`), links só http(s), proteção contra prompt injection,
+      tom em lista fixa, erro do Gemini só no log, token em tempo constante, verificação de fonte por domínio exato
+- [x] README didático e fluxo de branches `dev`/`prod`
+- Pendentes (baixa prioridade): servir fontes pelo próprio app (LGPD), backup/exportação de dados do navegador,
+  "Copiado!" falso no modo assistido, motivo do erro de feed na Revisão, exemplo de JSON fixo em 5 slides,
+  carregar jsPDF/JSZip sob demanda, limite de largura do logo, ideia marcada como usada por engano, acessibilidade das abas
+- [ ] **Validação humana**
+
 ## F8 — Deploy e entrega · `prompts/fase-08-deploy-entrega.md`
 - [ ] Scripts de deploy e `.env.production.example`
 - [ ] README final

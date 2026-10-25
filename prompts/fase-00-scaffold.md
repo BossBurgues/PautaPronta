@@ -18,7 +18,7 @@ Qualquer tela, rota além de `/api/health`, lógica de IA, RSS, canvas. Não use
 
 ## Tarefas
 
-1. `git init` (se ainda não for repositório). Branch `main`.
+1. `git init` (se ainda não for repositório). Branches `dev` (padrão) e `prod` — ver README, seção 7.
 2. **`.gitignore`** na raiz:
    ```
    node_modules/

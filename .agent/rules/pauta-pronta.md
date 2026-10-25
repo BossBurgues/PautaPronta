@@ -38,6 +38,13 @@ Você é o agente de código do projeto Pauta Pronta. Siga estas regras em toda 
 19. Use o navegador do Antigravity para abrir `http://localhost:5173` quando a fase tiver UI, e tire screenshot.
 20. Atualize `PROGRESSO.md`: marque `[x]` só no que foi realmente verificado. Não marque a validação humana.
 
+## Git (branches `dev` e `prod`)
+21. Comece cada tarefa numa branch nova a partir de `dev` (`fix/...`, `feat/...`, `docs/...`). Nunca commite direto em
+    `dev` nem em `prod`; nunca faça `push --force` nessas duas.
+22. Commits pequenos com prefixo (`feat:`, `fix:`, `docs:`, `test:`, `chore:`). Antes de commitar: `npm test`, `npm run build`
+    e `git diff --check`.
+23. Merge em `dev` e em `prod` é feito pelo usuário via Pull Request. Você pode abrir o PR, não fazer o merge.
+
 ## Ambiente
-21. Windows. Use comandos que funcionem no PowerShell ou no terminal integrado. Caminhos com `/` funcionam no Node.
-22. Não rode comandos interativos que esperam resposta (geradores com perguntas). Crie os arquivos à mão.
+24. Windows. Use comandos que funcionem no PowerShell ou no terminal integrado. Caminhos com `/` funcionam no Node.
+25. Não rode comandos interativos que esperam resposta (geradores com perguntas). Crie os arquivos à mão.
