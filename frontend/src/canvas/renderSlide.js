@@ -288,7 +288,9 @@ export function renderSlide(
     }
 
     // Seção de Fontes
-    const sources = Array.isArray(content?.sources) ? content.sources : [];
+    const sources = (Array.isArray(content?.sources) ? content.sources : []).filter(
+      (src) => src?.url?.trim() || src?.title?.trim(),
+    );
     if (sources.length > 0) {
       ctx.fillStyle = colors.muted;
       ctx.font = `700 28px "${fontFamily}", sans-serif`;
