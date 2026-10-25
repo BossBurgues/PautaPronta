@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { validateContent, LIMITS } from '../../../shared/schema.js';
 import sampleFixture from '../../../shared/fixtures/exemplo.json';
 import SlidePreview from './SlidePreview.jsx';
@@ -19,6 +19,15 @@ export default function Review({
   usedSources = [],
   feedErrors = [],
 }) {
+  // Em telas estreitas as colunas empilham; este seletor alterna entre editar e ver a prévia.
+  const [mobileView, setMobileView] = useState('editar');
+  const switchRef = useRef(null);
+
+  const showMobileView = (view) => {
+    setMobileView(view);
+    switchRef.current?.scrollIntoView({ block: 'start' });
+  };
+
   const validation = useMemo(() => {
     if (!content) return { valid: false, errors: [], warnings: [] };
     return validateContent(content);
@@ -139,8 +148,27 @@ export default function Review({
         validation={validation}
       />
 
+      <div ref={switchRef} className="review-mobile-switch" role="group" aria-label="Modo de visualização">
+        <button
+          type="button"
+          aria-pressed={mobileView === 'editar'}
+          className={mobileView === 'editar' ? 'active' : ''}
+          onClick={() => showMobileView('editar')}
+        >
+          Editar
+        </button>
+        <button
+          type="button"
+          aria-pressed={mobileView === 'previa'}
+          className={mobileView === 'previa' ? 'active' : ''}
+          onClick={() => showMobileView('previa')}
+        >
+          Prévia ({totalSlides})
+        </button>
+      </div>
+
       {/* Grade de 2 Colunas */}
-      <div className="review-workspace">
+      <div className={`review-workspace mobile-view-${mobileView}`}>
         {/* Coluna Esquerda: Formulários de Edição */}
         <div className="review-editor-column">
           <div className="editors-section">
