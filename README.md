@@ -64,7 +64,7 @@ flowchart LR
    o Worker pede uma correção à IA uma vez.
 5. Cada fonte citada é comparada com os sites realmente consultados. As que não batem aparecem com o selo
    **"verificar"**.
-6. O carrossel abre na tela **Revisão**, onde você edita tudo e vê os slides mudando na hora.
+6. O carrossel abre na aba **Revisar**, onde você edita tudo e vê os slides mudando na hora.
 
 Os diagramas completos (sequências, telas, modelo de dados) estão em
 [`docs/DIAGRAMAS.md`](docs/DIAGRAMAS.md).
@@ -169,7 +169,7 @@ npm run dev:front
 
 **4. Conecte o app à API**
 
-Abra `http://localhost:5173`, vá na aba **Config → Acesso**, cole o mesmo `ACCESS_TOKEN` do passo 2 e clique em
+Abra `http://localhost:5173`, vá na aba **Configurações → Acesso à ferramenta**, cole o mesmo `ACCESS_TOKEN` do passo 2 e clique em
 **Testar conexão**.
 
 ### Comandos úteis
@@ -191,33 +191,62 @@ O app tem cinco abas:
 
 | Aba | Para quê |
 |---|---|
-| **Gerar** | Digite o tema, escolha formatos e nº de slides, ligue (ou não) a busca na web e clique em **Gerar**. No topo aparecem as **Sugestões da semana**. |
-| **Revisão** | Edite títulos, textos, legendas, CTA, hashtags e fontes. Os slides se atualizam na hora. No celular, use o seletor **Editar / Prévia**. |
-| **Ideias** | Guarde temas e links para depois. O botão **Gerar a partir desta ideia** leva o tema para a aba Gerar. |
-| **Histórico** | As últimas 20 gerações. **Abrir na revisão** traz uma delas de volta. |
-| **Config** | Identidade visual (logo, cores, fonte, @), feeds RSS, padrões de geração, acesso à API e **backup dos dados**. |
+| **Gerar** | Digite o tema e escolha formatos, nº de slides, **público**, **tom** e **formato visual** (texto, infográfico ou texto + imagem). No topo aparecem 2 ou 3 **sugestões da semana**. |
+| **Revisar** | Edite cada slide e veja o resultado na hora. Reordene com as setas, escolha a composição e o fundo, use **negrito**, insira e recorte imagens. No celular, use o seletor **Editar / Prévia**. |
+| **Ideias** | Guarde temas e links. A busca ignora acentos. **Gerar a partir desta ideia** (ou **Gerar de novo**) leva o tema para a aba Gerar. |
+| **Histórico** | As últimas 20 gerações. **Abrir na revisão** traz uma de volta; **Reusar como ideia** guarda a pauta no banco de ideias. |
+| **Configurações** | Identidade visual com prévia ao vivo, feeds RSS, sites de referência, padrões de geração, acesso à ferramenta e **backup dos dados**. |
+
+### Identidade visual
+
+A identidade padrão segue a HOTMILK, conforme a avaliação do Lucivandro:
+
+| Item | Padrão |
+|---|---|
+| Cores | Principal `#FF024B` (rosa), secundária `#A20136` (vinho), fundo claro `#F0F0F0`, grafite `#1E1E1E` |
+| Fundos | Capa e conclusão escuras (grafite); slides do meio claros. Cada slide pode trocar para claro ou escuro |
+| Fontes | **Saira** nos títulos e **Open Sans** nos textos (Montserrat e outras como alternativa) |
+| Logo | Pequeno no rodapé de todos os slides, maior na capa e na conclusão; versão clara automática nos slides escuros |
+| Topo | Rótulo opcional (ex.: `CIS.IA / INSIGHTS`) e contador `02 / 06` |
+
+O **logo** e o **@ do rodapé** são enviados em Configurações. Um logo com fundo claro liso tem o fundo removido e as margens
+vazias cortadas automaticamente. Por ser marca de terceiros, o logo **não** fica no repositório: fica só no navegador de quem usa.
+
+### Composições de slide
+
+| Composição | Quando usar |
+|---|---|
+| Só texto | Padrão. O bloco de texto fica centralizado na altura, sem o vão vazio embaixo |
+| Número em destaque | Um dado forte das fontes (ex.: `40%`) com a explicação logo abaixo |
+| Passos numerados | Processos, etapas ou checklists (2 a 4 passos: 01, 02, 03…) |
+| Imagem em cima / ao lado / de fundo | Texto + imagem. Você insere a imagem (PNG, JPG ou WebP) e ajusta o recorte (zoom, horizontal, vertical) |
+
+A IA já escolhe "número em destaque" e "passos" quando o conteúdo pede. As composições com imagem ficam por sua conta, porque
+a ferramenta não gera imagens. Sem imagem, elas saem como "só texto" na exportação.
 
 ### Exportar
 
-Na Revisão, o painel **Exportar e Publicar** oferece:
+Na aba Revisar, o painel **Exportar arquivos** oferece:
 
 | Botão | Resultado | Onde usar |
 |---|---|---|
-| PDF (LinkedIn) | Um PDF com uma página por slide | Post de documento/carrossel no LinkedIn |
-| ZIP de imagens (Instagram) | `slide-01.png`, `slide-02.png`… em 1080×1350 | Carrossel do Instagram |
-| Imagem para WhatsApp | Um JPEG com os slides em grade | Enviar uma prévia rápida |
-| Copiar legenda | Legenda + CTA + hashtags (+ fontes no LinkedIn) | Colar no post |
+| PDF para LinkedIn | Um PDF com uma página por slide | Post de documento (carrossel) no LinkedIn |
+| Imagens PNG para Instagram (.zip) | `slide-01.png`, `slide-02.png`… em 1080×1350 | Carrossel do Instagram |
+| Prévia para WhatsApp | Um JPEG com os slides em grade | Mandar uma prévia rápida |
+| Copiar legenda | Legenda + pergunta + hashtags; no LinkedIn, também as referências numeradas com links | Colar no post |
 
-Cada slide também tem um botão **Baixar PNG** próprio.
+Cada slide também tem um botão **Baixar PNG** próprio. Com mais de 3 fontes, a conclusão avisa e um slide extra lista
+todas as referências numeradas.
 
 ### Dicas de revisão
 
-- **Contador vermelho** = texto acima do limite. O slide reduz a fonte sozinho, mas o ideal é encurtar.
+- **Negrito:** selecione palavras no texto e clique em **B Negrito** (ou escreva `**assim**`). No slide, o negrito sai na cor de destaque.
+- **Contador vermelho** = texto acima do limite. A letra reduz só até um tamanho mínimo legível; se ainda não couber, o texto
+  termina em "…" e aparece o aviso **"texto não coube"**: resuma.
+- **Fonte deste slide:** uma linha curta no pé do slide, como no artigo da semana (ex.: `Fonte: McKinsey [1]`).
 - **Selo "verificar"** numa fonte = a URL não apareceu entre os sites consultados. Abra e confira antes de publicar.
-- O rascunho é salvo automaticamente no navegador; pode fechar e voltar depois.
-- **Descartar rascunho** (no topo da Revisão) limpa o carrossel atual para começar outro.
-
----
+- O rascunho é salvo automaticamente no navegador. Com muitas imagens grandes ele pode não caber; o app avisa.
+- **Descartar rascunho** (no topo da aba Revisar) limpa o carrossel atual para começar outro.
 
 ## 5. Modo assistido (quando a cota acaba)
 
@@ -225,8 +254,8 @@ A cota gratuita da IA tem limite diário. Quando ela acaba (ou a API está fora 
 **modo assistido**, que funciona sem servidor e sem custo:
 
 1. Clique em **Copiar prompt**.
-2. Cole num assistente gratuito ([Gemini](https://gemini.google.com), [ChatGPT](https://chatgpt.com) etc.).
-3. Copie a resposta (o bloco JSON) e cole na caixa **Cole aqui a resposta da IA**.
+2. Cole no [ChatGPT](https://chatgpt.com), no [Microsoft Copilot](https://copilot.microsoft.com) ou em outro assistente gratuito.
+3. Copie a resposta (o bloco de código JSON) e cole na caixa do passo 2. O link **Ver exemplo de resposta esperada** mostra o formato certo.
 4. Clique em **Usar resposta**. Se algo estiver fora do formato, o app lista o problema e gera um
    **pedido de correção** para você colar de volta no assistente.
 
@@ -338,7 +367,7 @@ O que o projeto faz para se proteger:
 **Privacidade (LGPD):** o app não coleta dados pessoais de terceiros, não tem rastreamento e não chama nenhum
 serviço de terceiros ao abrir: até as fontes tipográficas são servidas pelo próprio app (`frontend/public/fonts`).
 Ideias, histórico e configurações ficam **só no navegador** de quem usa. Limpar os dados do navegador apaga essas
-informações, então use **Config → Backup dos dados** de vez em quando (o token de acesso não vai no arquivo).
+informações, então use **Configurações → Backup dos dados** de vez em quando (o token de acesso não vai no arquivo).
 
 Encontrou uma falha? Não abra issue pública com detalhes: avise o mantenedor diretamente.
 
@@ -366,13 +395,14 @@ pode ser apontado depois, pelo painel do Pages.
 |---|---|
 | Trocar a chave da IA | `npx wrangler secret put GEMINI_API_KEY` (dentro de `worker/`) |
 | Trocar o modelo da IA | `GEMINI_MODEL` em `worker/wrangler.toml` (confira os modelos gratuitos no AI Studio) |
-| Trocar o token de acesso | `npx wrangler secret put ACCESS_TOKEN` e atualizar na aba Config |
+| Trocar o token de acesso | `npx wrangler secret put ACCESS_TOKEN` e atualizar na aba Configurações |
 | Mudar o limite diário | `DAILY_LIMIT` em `worker/wrangler.toml` |
 | Mudar os feeds das sugestões semanais | `DEFAULT_FEEDS` em `worker/wrangler.toml` |
 | Mudar os temas das sugestões semanais | `TOPICS` em `worker/wrangler.toml` |
-| Ajustar o tom ou as regras do texto | `shared/prompt.js` |
+| Ajustar o tom, o público ou as regras do texto | `shared/prompt.js` (`RULES`, `TONES`, `AUDIENCES`, `VISUAL_FORMATS`) |
+| Mudar os sites de referência (sem RSS) | Aba **Configurações → Sites de referência** |
 | Mudar limites (tamanho de título etc.) | `LIMITS` em `shared/schema.js` |
-| Mudar os feeds de cada geração | Aba **Config → Fontes RSS** no app |
+| Mudar os feeds de cada geração | Aba **Configurações → Fontes RSS** no app |
 | Liberar a API para um novo domínio | `ALLOWED_ORIGIN` no `wrangler.toml` e `connect-src` em `frontend/public/_headers` |
 
 Depois de mexer no `wrangler.toml`, publique o Worker de novo para valer em produção.
@@ -383,14 +413,14 @@ Depois de mexer no `wrangler.toml`, publique o Worker de novo para valer em prod
 
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
-| "Token inválido" | Token da aba Config diferente do `ACCESS_TOKEN` | Copie o token de novo, sem espaços |
+| "Token inválido" | Token da aba Configurações diferente do `ACCESS_TOKEN` | Copie o token de novo, sem espaços |
 | "A cota gratuita acabou por hoje" | Limite do Google ou `DAILY_LIMIT` atingido | Use o modo assistido; a cota volta no dia seguinte |
 | "A IA respondeu com erro" | Modelo indisponível ou chave inválida | Veja o log do Worker (`npm run dev:worker` ou painel do Cloudflare) |
-| "Sem conexão com o servidor" | Worker desligado ou URL da API errada | Confira a aba Config e se o Worker está rodando |
-| "Não consegui ler" um feed | Site fora do ar ou bloqueando | Troque o feed na aba Config; a geração continua com os outros |
+| "Sem conexão com o servidor" | Worker desligado ou URL da API errada | Confira a aba Configurações e se o Worker está rodando |
+| "Não consegui ler" um feed | Site fora do ar ou bloqueando | Troque o feed na aba Configurações; a geração continua com os outros |
 | Fonte com selo "verificar" | A URL não estava entre os sites consultados | Abra e confira; troque se for o caso |
 | Texto pequeno ou apertado no slide | Texto acima do limite | Encurte até o contador ficar cinza |
-| Ideias e histórico sumiram | Dados do navegador foram limpos ou outro navegador | Restaure um backup em **Config → Backup dos dados** |
+| Ideias e histórico sumiram | Dados do navegador foram limpos ou outro navegador | Restaure um backup em **Configurações → Backup dos dados** |
 
 ---
 
