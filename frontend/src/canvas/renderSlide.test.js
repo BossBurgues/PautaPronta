@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { wrapText, fitText } from './renderSlide.js';
+import { wrapText, fitText, tokenizeRich, wrapRich, fitRich, getRenderSlides, slideTheme, mix } from './renderSlide.js';
 
 describe('canvas/renderSlide', () => {
   const measure = (s) => s.length * 10;
@@ -61,5 +61,47 @@ describe('canvas/renderSlide', () => {
 
     expect(result.size).toBe(20);
     expect(result.overflow).toBe(true);
+  });
+});
+
+describe('texto rico e lista de slides', () => {
+  const measure = (s) => s.length * 10;
+
+  it('tokenizeRich marca o que está entre ** como negrito e remove os marcadores', () => {
+    const words = tokenizeRich('um **dois três** quatro').filter((t) => t.text);
+    expect(words.map((t) => [t.text, t.bold])).toEqual([['um', false], ['dois', true], ['três', true], ['quatro', false]]);
+  });
+
+  it('wrapRich quebra linhas mantendo os trechos em negrito', () => {
+    const lines = wrapRich('aa **bb** cc', 50, measure);
+    expect(lines).toEqual([[{ text: 'aa ', bold: false }, { text: 'bb', bold: true }], [{ text: 'cc', bold: false }]]);
+  });
+
+  it('fitRich não encolhe abaixo do mínimo: corta com reticências e marca overflow', () => {
+    const r = fitRich({ text: 'palavra '.repeat(30), maxWidth: 100, maxHeight: 60, maxSize: 40, minSize: 30, lineHeight: 1, measureAt: () => measure });
+    expect(r.size).toBe(30);
+    expect(r.overflow).toBe(true);
+    expect(r.lines).toHaveLength(2);
+    expect(r.lines.at(-1).at(-1).text.endsWith('…')).toBe(true);
+  });
+
+  it('getRenderSlides acrescenta o slide de fontes quando há mais de 3', () => {
+    const content = { slides: [{}, {}, {}, {}], sources: [1, 2, 3].map((i) => ({ title: `F${i}`, url: `https://f${i}.br` })) };
+    expect(getRenderSlides(content)).toHaveLength(4);
+    content.sources.push({ title: 'F4', url: 'https://f4.br' });
+    const list = getRenderSlides(content);
+    expect(list).toHaveLength(5);
+    expect(list.at(-1).kind).toBe('fontes');
+  });
+
+  it('slideTheme deixa capa e conclusão escuras, respeita a escolha e o fundo de imagem', () => {
+    expect(slideTheme({ role: 'capa' })).toBe('escuro');
+    expect(slideTheme({ role: 'ponto' })).toBe('claro');
+    expect(slideTheme({ role: 'capa', theme: 'claro' })).toBe('claro');
+    expect(slideTheme({ role: 'ponto', layout: 'imagem-fundo' })).toBe('escuro');
+  });
+
+  it('mix mistura cores', () => {
+    expect(mix('#000000', '#ffffff', 0.5)).toBe('#808080');
   });
 });

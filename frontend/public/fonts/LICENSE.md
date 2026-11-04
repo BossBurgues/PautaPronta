@@ -11,5 +11,7 @@ inclusive em projetos comerciais, desde que as fontes não sejam vendidas sozinh
 | `merriweather.woff2` | Merriweather | The Merriweather Project Authors |
 | `montserrat.woff2` | Montserrat | The Montserrat Project Authors |
 | `poppins-400.woff2`, `poppins-700.woff2` | Poppins | Indian Type Foundry |
+| `saira.woff2` | Saira | The Saira Project Authors |
+| `open-sans.woff2` | Open Sans | The Open Sans Project Authors |
 
 Texto completo da licença: https://openfontlicense.org/open-font-license-official-text/

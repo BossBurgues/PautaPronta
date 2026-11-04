@@ -51,3 +51,20 @@
   font-display: swap;
   src: url('/fonts/poppins-700.woff2') format('woff2');
 }
+
+/* Identidade HOTMILK: Saira nos títulos e Open Sans nos textos (ambas variáveis, SIL OFL). */
+@font-face {
+  font-family: 'Saira';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/saira.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/open-sans.woff2') format('woff2');
+}
