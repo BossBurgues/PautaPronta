@@ -1,14 +1,18 @@
 {
   "topic": "LGPD na prática",
   "slides": [
-    { "n": 1, "role": "capa", "title": "LGPD na prática: o essencial para sua empresa", "body": "Um resumo direto da Lei Geral de Proteção de Dados e do que ela muda no dia a dia." },
-    { "n": 2, "role": "contexto", "title": "O que é a LGPD", "body": "A Lei nº 13.709/2018 regula o tratamento de dados pessoais no Brasil, em meios físicos e digitais, por empresas e órgãos públicos." },
-    { "n": 3, "role": "ponto", "title": "Todo tratamento precisa de uma base legal", "body": "O art. 7º lista as hipóteses que autorizam o tratamento, como consentimento, cumprimento de obrigação legal e execução de contrato." },
-    { "n": 4, "role": "ponto", "title": "O titular tem direitos garantidos", "body": "Pelo art. 18, a pessoa pode pedir confirmação, acesso, correção e eliminação dos seus dados, entre outros direitos." },
-    { "n": 5, "role": "conclusao", "title": "Quem fiscaliza e o que está em jogo", "body": "A ANPD fiscaliza a lei. A multa simples pode chegar a 2% do faturamento, limitada a R$ 50 milhões por infração (art. 52)." }
+    { "n": 1, "role": "capa", "title": "LGPD na prática: o essencial para sua empresa", "body": "Em 5 slides: o que a lei regula, quando você pode tratar dados, quanto custa errar e quem fiscaliza." },
+    { "n": 2, "role": "contexto", "layout": "texto", "title": "O que é a LGPD", "body": "A Lei nº 13.709/2018 regula o tratamento de **dados pessoais** no Brasil, em meios físicos e digitais, por empresas e órgãos públicos [1].", "source": "Fonte: Lei nº 13.709/2018 (LGPD) [1]" },
+    { "n": 3, "role": "ponto", "layout": "passos", "title": "Todo tratamento precisa de uma base legal", "body": "O art. 7º lista as hipóteses que autorizam o tratamento. Três exemplos:", "steps": [
+      { "label": "Consentimento", "text": "Autorização livre, informada e inequívoca do titular." },
+      { "label": "Obrigação legal", "text": "Quando a empresa precisa cumprir uma lei ou norma." },
+      { "label": "Contrato", "text": "Para executar um contrato do qual o titular faz parte." }
+    ], "source": "Fonte: LGPD, art. 7º [1]" },
+    { "n": 4, "role": "ponto", "layout": "destaque", "stat": "2%", "title": "Quanto pode custar errar", "body": "do faturamento é o teto da multa simples, limitada a **R$ 50 milhões** por infração [1].", "source": "Fonte: LGPD, art. 52 [1]" },
+    { "n": 5, "role": "conclusao", "title": "Quem fiscaliza e o que está em jogo", "body": "A **ANPD** fiscaliza a lei [2]. O titular pode pedir acesso, correção e eliminação dos seus dados (art. 18) [1]." }
   ],
-  "caption_linkedin": "A LGPD já faz parte da rotina de qualquer empresa que lida com dados pessoais, de clientes a colaboradores. Neste carrossel, reuni os pontos essenciais da Lei nº 13.709/2018: o que ela regula, por que toda operação precisa de uma base legal, quais direitos o titular pode exercer e quem fiscaliza o cumprimento. Um bom ponto de partida para revisar processos internos.",
-  "caption_instagram": "LGPD sem complicação: o que é, base legal, direitos do titular e fiscalização. Arrasta pro lado e salva pra consultar depois.",
+  "caption_linkedin": "A LGPD já faz parte da rotina de qualquer empresa que lida com dados pessoais, de clientes a colaboradores. Neste carrossel, reuni os pontos essenciais da Lei nº 13.709/2018: o que ela regula, por que toda operação precisa de uma base legal, quanto pode custar o descumprimento e quem fiscaliza. Um bom ponto de partida para revisar processos internos.",
+  "caption_instagram": "LGPD sem complicação: o que é, base legal, multas e fiscalização. Arrasta pro lado e salva pra consultar depois.",
   "hashtags": ["#LGPD", "#ProtecaoDeDados", "#Compliance", "#Privacidade"],
   "cta": "Sua empresa já mapeou quais dados pessoais trata hoje?",
   "sources": [

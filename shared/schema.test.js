@@ -4,6 +4,7 @@ import {
   ROLES,
   normalizeContent,
   validateContent,
+  stripMarks,
 } from './schema.js';
 import fixture from './fixtures/exemplo.json';
 
@@ -68,7 +69,7 @@ describe('shared/schema', () => {
     };
     const result = validateContent(normalizeContent(raw));
     expect(result.valid).toBe(true);
-    expect(result.warnings.some((w) => w.includes('Slide 1: corpo com 225 caracteres'))).toBe(true);
+    expect(result.warnings.some((w) => w.includes('Slide 1: texto com 225 caracteres'))).toBe(true);
   });
 
   it('emite warning quando CTA não termina com interrogação ou passa de 150 chars', () => {
@@ -162,5 +163,49 @@ describe('shared/schema', () => {
     expect(emptyResult.errors.some((e) => e.includes('Instagram'))).toBe(true);
     expect(emptyResult.errors.some((e) => e.includes('hashtags'))).toBe(true);
     expect(emptyResult.errors.some((e) => e.includes('fontes'))).toBe(true);
+  });
+});
+
+describe('campos visuais do slide', () => {
+  const png = 'data:image/png;base64,iVBORw0KGgo=';
+
+  it('preserva layout, fundo, número, passos, fonte e imagem válidos', () => {
+    const raw = structuredClone(fixture);
+    Object.assign(raw.slides[2], {
+      layout: 'destaque', theme: 'escuro', stat: '40%', source: 'McKinsey [1]',
+      image: { src: png, focusX: 30, focusY: 120, zoom: 9 },
+      steps: [{ label: ' A ', text: ' um ' }, { label: '', text: '' }],
+    });
+    const s = normalizeContent(raw).slides[2];
+    expect(s).toMatchObject({ layout: 'destaque', theme: 'escuro', stat: '40%', source: 'McKinsey [1]' });
+    expect(s.image).toEqual({ src: png, focusX: 30, focusY: 100, zoom: 3 });
+    expect(s.steps).toEqual([{ label: 'A', text: 'um' }]);
+  });
+
+  it('descarta layout desconhecido, tema auto e imagem que não é data URL de imagem', () => {
+    const raw = structuredClone(fixture);
+    Object.assign(raw.slides[1], { layout: 'video', theme: 'auto', image: { src: 'https://x.com/a.png' } });
+    const s = normalizeContent(raw).slides[1];
+    expect(s.layout).toBeUndefined();
+    expect(s.theme).toBeUndefined();
+    expect(s.image).toBeUndefined();
+  });
+
+  it('não conta os marcadores de negrito no limite do título', () => {
+    const raw = structuredClone(fixture);
+    raw.slides[1].title = `**${'a'.repeat(60)}**`;
+    expect(validateContent(normalizeContent(raw)).warnings).toEqual([]);
+    expect(stripMarks('um **dois** três')).toBe('um dois três');
+  });
+
+  it('avisa quando falta o número em destaque ou passos suficientes', () => {
+    const raw = structuredClone(fixture);
+    raw.slides[2].layout = 'destaque';
+    raw.slides[3].layout = 'passos';
+    raw.slides[3].steps = [{ label: 'só um', text: 'passo' }];
+    const { warnings, valid } = validateContent(normalizeContent(raw));
+    expect(valid).toBe(true);
+    expect(warnings.some((w) => w.includes('número em destaque'))).toBe(true);
+    expect(warnings.some((w) => w.includes('de 2 a 4 passos'))).toBe(true);
   });
 });
