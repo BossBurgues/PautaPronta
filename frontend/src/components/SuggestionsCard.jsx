@@ -191,7 +191,7 @@ export default function SuggestionsCard({
                 {Array.isArray(item.sources) && item.sources.length > 0 && (
                   <ul className="suggestion-sources-list">
                     {item.sources.map((src, sIdx) => (
-                      <li key={sIdx}>
+                      <li key={sIdx} title={src.title || src.url}>
                         <a
                           href={src.url}
                           target="_blank"
@@ -211,14 +211,14 @@ export default function SuggestionsCard({
                   className="primary btn-use-suggestion"
                   onClick={() => onUseSuggestion?.(item)}
                 >
-                  Gerar agora
+                  Usar este tema
                 </button>
                 <button
                   type="button"
                   className="btn-secondary btn-save-suggestion-idea"
                   onClick={() => handleSaveIdea(item, idx)}
                 >
-                  {savedIndices[idx] ? '✓ Salva em Ideias!' : 'Salvar como ideia'}
+                  {savedIndices[idx] ? '✓ Salva em Ideias' : 'Salvar ideia'}
                 </button>
               </div>
             </div>

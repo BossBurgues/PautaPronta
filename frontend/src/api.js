@@ -104,7 +104,7 @@ export async function request(
  */
 export async function generate(
   config,
-  { theme, slideCount = 5, formats = ['linkedin', 'instagram'], useWebSearch = false, tone = 'profissional-didatico' },
+  { theme, slideCount = 5, formats = ['linkedin', 'instagram'], useWebSearch = false, tone, audience, visualFormat },
 ) {
   const feeds = Array.isArray(config?.feeds) ? config.feeds : [];
   const sources = feeds.filter((f) => f.enabled).map((f) => f.url);
@@ -117,7 +117,10 @@ export async function generate(
       formats,
       useWebSearch,
       tone,
+      audience,
+      visualFormat,
       sources,
+      sites: Array.isArray(config?.referenceSites) ? config.referenceSites : [],
     },
   });
 }

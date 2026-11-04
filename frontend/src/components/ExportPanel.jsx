@@ -43,7 +43,7 @@ export default function ExportPanel({ content, profile, logoImg, validation }) {
     try {
       setLoadingAction('zip');
       await exportPngZip(content, profile, logoImg);
-      showFeedback('ZIP de imagens gerado com sucesso!');
+      showFeedback('Imagens PNG geradas (arquivo .zip).');
     } catch (err) {
       console.error(err);
       showFeedback('Erro ao gerar ZIP de imagens.', true);
@@ -90,7 +90,7 @@ export default function ExportPanel({ content, profile, logoImg, validation }) {
   return (
     <div className="export-panel-card">
       <div className="export-panel-header">
-        <h3 className="section-title">Exportar e Publicar</h3>
+        <h3 className="section-title">Exportar arquivos</h3>
       </div>
 
       {hasErrors && (
@@ -115,7 +115,7 @@ export default function ExportPanel({ content, profile, logoImg, validation }) {
           onClick={handleExportPdf}
           disabled={loadingAction !== null}
         >
-          📄 {loadingAction === 'pdf' ? 'Gerando…' : 'PDF (LinkedIn)'}
+          📄 {loadingAction === 'pdf' ? 'Gerando…' : 'PDF para LinkedIn'}
         </button>
 
         <button
@@ -124,7 +124,7 @@ export default function ExportPanel({ content, profile, logoImg, validation }) {
           onClick={handleExportZip}
           disabled={loadingAction !== null}
         >
-          📦 {loadingAction === 'zip' ? 'Gerando…' : 'ZIP de imagens (Instagram)'}
+          📦 {loadingAction === 'zip' ? 'Gerando…' : 'Imagens PNG para Instagram (.zip)'}
         </button>
 
         <button
@@ -133,7 +133,7 @@ export default function ExportPanel({ content, profile, logoImg, validation }) {
           onClick={handleExportWhatsapp}
           disabled={loadingAction !== null}
         >
-          📱 {loadingAction === 'whatsapp' ? 'Gerando…' : 'Imagem para WhatsApp'}
+          📱 {loadingAction === 'whatsapp' ? 'Gerando…' : 'Prévia para WhatsApp'}
         </button>
 
         <button
@@ -156,7 +156,7 @@ export default function ExportPanel({ content, profile, logoImg, validation }) {
       </div>
 
       <p className="export-reminder">
-        Revise o conteúdo e as fontes antes de publicar. A publicação é manual.
+        Revise o conteúdo e as fontes antes de publicar. Cada slide sai em 1080 × 1350 px; a legenda do LinkedIn já inclui as referências completas com links. A publicação é manual.
       </p>
     </div>
   );

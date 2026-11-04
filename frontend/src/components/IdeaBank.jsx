@@ -49,15 +49,15 @@ export default function IdeaBank({
   }, [ideas]);
 
   const filteredIdeas = useMemo(() => {
-    const q = searchText.trim().toLowerCase();
+    // Busca sem diferenciar maiúsculas e acentos ("governanca" acha "governança"), em tema, notas e links.
+    const fold = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const q = fold(searchText.trim());
     return ideas.filter((item) => {
       if (statusFilter !== 'todas' && item.status !== statusFilter) {
         return false;
       }
       if (!q) return true;
-      const inTheme = (item.theme || '').toLowerCase().includes(q);
-      const inNotes = (item.notes || '').toLowerCase().includes(q);
-      return inTheme || inNotes;
+      return fold([item.theme, item.notes, ...(item.links || [])].join(' ')).includes(q);
     });
   }, [ideas, searchText, statusFilter]);
 
@@ -343,7 +343,7 @@ export default function IdeaBank({
                     className="primary btn-generate-from-idea"
                     onClick={() => onGenerateFromIdea(idea)}
                   >
-                    Gerar a partir desta ideia
+                    {idea.status === 'usada' ? 'Gerar de novo' : 'Gerar a partir desta ideia'}
                   </button>
                   <button
                     type="button"
