@@ -1736,7 +1736,7 @@ details[open] .summary-toggle-icon {
   background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 16px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1760,6 +1760,11 @@ details[open] .summary-toggle-icon {
   font-size: 0.825rem;
   color: #334155;
   line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .suggestion-sources-list {
@@ -1774,7 +1779,15 @@ details[open] .summary-toggle-icon {
 .suggestion-sources-list a {
   color: var(--accent);
   text-decoration: none;
-  word-break: break-all;
+  /* Quebra só onde há espaço; antes "break-all" partia palavras ("Proteçã o"). */
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.suggestion-sources-list li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .suggestion-sources-list a:hover {
@@ -1815,4 +1828,234 @@ summary:focus-visible,
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* ---------- Avaliação Lucivandro: controles novos ---------- */
+.field-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 6px 0 0;
+  line-height: 1.45;
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin: 6px 0 0;
+}
+
+.generate-options-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.slide-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.slide-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.775rem;
+  color: var(--muted);
+}
+
+.move-buttons {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.btn-icon:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.label-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-bold {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-link {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  padding: 0;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.image-field {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  background: var(--surface);
+}
+
+.image-field-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.crop-controls {
+  border: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.crop-controls legend {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.crop-controls label {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.steps-field {
+  display: grid;
+  gap: 8px;
+}
+
+.step-row {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 8px;
+  align-items: start;
+}
+
+.step-index {
+  font-weight: 700;
+  color: var(--accent);
+  padding-top: 8px;
+}
+
+.step-inputs {
+  display: grid;
+  gap: 4px;
+}
+
+.assisted-example {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+}
+
+.assisted-example summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.assisted-example pre {
+  max-height: 220px;
+  overflow: auto;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  white-space: pre-wrap;
+}
+
+.sites-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.sites-list .feed-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.add-site-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-site-row input {
+  flex: 1;
+}
+
+.profile-check {
+  align-self: end;
+  padding-bottom: 10px;
+}
+
+.color-field-label small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.slide-preview-wrapper.has-overflow .slide-canvas {
+  outline: 3px solid var(--warning);
+  outline-offset: 2px;
+}
+
+.overflow-badge {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .generate-options-grid.three,
+  .slide-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Campos confortáveis no celular: 16px evita o zoom automático do iPhone ao tocar. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+  }
 }

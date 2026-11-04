@@ -37,3 +37,28 @@ export function deleteSlide(content, index) {
   if (content.slides.length <= LIMITS.slidesMin) return content;
   return { ...content, slides: renumber(content.slides.filter((_, i) => i !== index)) };
 }
+
+// Move um slide para cima (delta -1) ou para baixo (+1). O papel (capa, conclusão…) vai junto.
+export function moveSlide(content, index, delta) {
+  if (!content || !Array.isArray(content.slides)) return content;
+  const to = index + delta;
+  if (index < 0 || index >= content.slides.length || to < 0 || to >= content.slides.length) return content;
+  const slides = [...content.slides];
+  [slides[index], slides[to]] = [slides[to], slides[index]];
+  return { ...content, slides: renumber(slides) };
+}
+
+// Formato "Texto + imagem" escolhido na tela Gerar: prepara as composições com espaço para imagem
+// (o autor insere as imagens na Revisão). Infográficos que a IA já escolheu ficam como estão.
+export function applyVisualFormat(content, visualFormat) {
+  if (!content || visualFormat !== 'texto-imagem' || !Array.isArray(content.slides)) return content;
+  let middle = 0;
+  const slides = content.slides.map((slide) => {
+    if (slide.role === 'capa') return { ...slide, layout: 'imagem-fundo' };
+    if (slide.role === 'conclusao') return slide;
+    if (slide.layout === 'destaque' || slide.layout === 'passos') return slide;
+    middle += 1;
+    return { ...slide, layout: middle % 2 ? 'imagem-topo' : 'imagem-lado' };
+  });
+  return { ...content, slides };
+}
