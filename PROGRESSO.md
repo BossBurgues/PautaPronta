@@ -109,6 +109,9 @@ Base: `docs/Avaliacao_Design_PautaPronta preenchida.pdf` e `docs/Exemplodeartigo
 - [x] 5 temas dele testados pelo modo assistido (ver Marco M2); falta repetir no modo online com a chave do Gemini
 - [x] Logo oficial HOTMILK + PUCPR confirmado e definido como padrão (`frontend/public/brand/`)
 - [ ] @ do rodapé (depende da conta onde ele vai publicar)
+- [x] Ajustes finais (05/11): @ separado para LinkedIn e Instagram, PDF sem perda (PNG), cor secundária legível nos
+      slides escuros, visual por carrossel (fundos e destaques), título fino como no site da HOTMILK (comparado em
+      hotmilk.com.br/pdi), @ longo nunca encosta no logo
 - [ ] **Validação humana**
 
 ## F8 — Deploy e entrega · `prompts/fase-08-deploy-entrega.md`

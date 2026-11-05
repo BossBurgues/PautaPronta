@@ -205,13 +205,21 @@ A identidade padrão segue a HOTMILK, conforme a avaliação do Lucivandro:
 |---|---|
 | Cores | Principal `#FF024B` (rosa), secundária `#A20136` (vinho), fundo claro `#F0F0F0`, grafite `#1E1E1E` |
 | Fundos | Capa e conclusão escuras (grafite); slides do meio claros. Cada slide pode trocar para claro ou escuro |
-| Fontes | **Saira** nos títulos e **Open Sans** nos textos (Montserrat e outras como alternativa) |
+| Fontes | **Saira** nos títulos e **Open Sans** nos textos (Montserrat e outras como alternativa). Títulos em negrito ou finos, como no site da HOTMILK |
 | Logo | Pequeno no rodapé de todos os slides, maior na capa e na conclusão; versão clara automática nos slides escuros |
 | Topo | Rótulo opcional (ex.: `CIS.IA / INSIGHTS`) e contador `02 / 06` |
 
 O logo padrão é o oficial **HOTMILK + PUCPR** (`frontend/public/brand/`), enviado pelo Lucivandro, que usa esse logo no
 trabalho dele. Outro logo pode ser enviado em Configurações: se tiver fundo claro liso, o fundo é removido e as margens vazias
-são cortadas automaticamente. O **@ do rodapé** segue a conta onde o post vai ser publicado e é preenchido em Configurações.
+são cortadas automaticamente. O **@ do rodapé** segue a conta onde o post vai ser publicado: há um campo para o LinkedIn
+(usado no PDF) e outro para o Instagram (usado nas imagens PNG e na prévia do WhatsApp).
+
+### Visual por carrossel
+
+As Configurações definem o padrão. Na aba Revisar, **Visual deste carrossel** muda só o carrossel aberto: fundos no padrão
+(capa e conclusão escuras), todos escuros ou todos claros, e a cor dos destaques (principal ou secundária). O fundo escolhido
+em um slide específico continua valendo. Nos fundos escuros, a cor de destaque é clareada automaticamente quando necessário
+para continuar legível.
 
 ### Composições de slide
 
@@ -231,7 +239,7 @@ Na aba Revisar, o painel **Exportar arquivos** oferece:
 
 | Botão | Resultado | Onde usar |
 |---|---|---|
-| PDF para LinkedIn | Um PDF com uma página por slide | Post de documento (carrossel) no LinkedIn |
+| PDF para LinkedIn | Um PDF com uma página por slide, imagens sem perda de qualidade | Post de documento (carrossel) no LinkedIn |
 | Imagens PNG para Instagram (.zip) | `slide-01.png`, `slide-02.png`… em 1080×1350 | Carrossel do Instagram |
 | Prévia para WhatsApp | Um JPEG com os slides em grade | Mandar uma prévia rápida |
 | Copiar legenda | Legenda + pergunta + hashtags; no LinkedIn, também as referências numeradas com links | Colar no post |
