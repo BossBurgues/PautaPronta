@@ -2059,3 +2059,36 @@ summary:focus-visible,
     height: 40px;
   }
 }
+
+/* Visual deste carrossel (aba Revisar) */
+.carousel-style-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 16px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.carousel-style-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  align-self: center;
+}
+
+.carousel-style-bar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.775rem;
+  color: var(--muted);
+}
+
+.carousel-style-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  align-self: center;
+}

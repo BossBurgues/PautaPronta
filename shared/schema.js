@@ -24,6 +24,10 @@ export const ROLES = ['capa', 'contexto', 'ponto', 'conclusao'];
 export const AI_LAYOUTS = ['texto', 'destaque', 'passos'];
 export const LAYOUTS = [...AI_LAYOUTS, 'imagem-topo', 'imagem-lado', 'imagem-fundo'];
 export const THEMES = ['auto', 'claro', 'escuro'];
+// Visual do carrossel inteiro: padrão (capa e conclusão escuras), todo escuro ou todo claro;
+// e a cor dos destaques (a do perfil, a principal ou a secundária).
+export const CAROUSEL_THEMES = ['padrao', 'escuro', 'claro'];
+export const CAROUSEL_HIGHLIGHTS = ['perfil', 'accent', 'accent2'];
 
 // Negrito no texto do slide: **palavra**. Os marcadores não contam no limite de caracteres.
 export function stripMarks(text) {
@@ -205,7 +209,7 @@ export function normalizeContent(raw) {
     }
   }
 
-  return {
+  const normalized = {
     topic,
     slides,
     caption_linkedin,
@@ -214,6 +218,12 @@ export function normalizeContent(raw) {
     cta,
     sources,
   };
+  // Visual deste carrossel (opcional): só entra quando difere do padrão das Configurações.
+  const style = {};
+  if (CAROUSEL_THEMES.includes(data.style?.theme) && data.style.theme !== 'padrao') style.theme = data.style.theme;
+  if (CAROUSEL_HIGHLIGHTS.includes(data.style?.highlight) && data.style.highlight !== 'perfil') style.highlight = data.style.highlight;
+  if (Object.keys(style).length) normalized.style = style;
+  return normalized;
 }
 
 /**

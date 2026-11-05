@@ -117,6 +117,34 @@ export default function Review({
         </div>
       </div>
 
+      {/* Visual só deste carrossel: por cima do padrão definido em Configurações */}
+      <div className="carousel-style-bar" role="group" aria-label="Visual deste carrossel">
+        <span className="carousel-style-title">Visual deste carrossel</span>
+        <label>
+          Fundos
+          <select
+            value={content.style?.theme || 'padrao'}
+            onChange={(e) => updateField('style', { ...content.style, theme: e.target.value })}
+          >
+            <option value="padrao">Padrão (capa e conclusão escuras)</option>
+            <option value="escuro">Todos escuros</option>
+            <option value="claro">Todos claros</option>
+          </select>
+        </label>
+        <label>
+          Destaques
+          <select
+            value={content.style?.highlight || 'perfil'}
+            onChange={(e) => updateField('style', { ...content.style, highlight: e.target.value })}
+          >
+            <option value="perfil">Como em Configurações</option>
+            <option value="accent">Cor principal</option>
+            <option value="accent2">Cor secundária</option>
+          </select>
+        </label>
+        <span className="carousel-style-hint">O fundo escolhido em cada slide continua valendo.</span>
+      </div>
+
       {/* Bloco recolhível de fontes consultadas pela API */}
       {(usedSources.length > 0 || feedErrors.length > 0) && (
         <details className="consulted-sources-card">

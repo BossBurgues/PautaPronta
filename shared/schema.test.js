@@ -209,3 +209,11 @@ describe('campos visuais do slide', () => {
     expect(warnings.some((w) => w.includes('de 2 a 4 passos'))).toBe(true);
   });
 });
+
+describe('visual do carrossel', () => {
+  it('guarda tema e destaque quando diferem do padrão, e descarta valores inválidos', () => {
+    expect(normalizeContent({ ...fixture, style: { theme: 'escuro', highlight: 'accent2' } }).style).toEqual({ theme: 'escuro', highlight: 'accent2' });
+    expect(normalizeContent({ ...fixture, style: { theme: 'padrao', highlight: 'perfil' } }).style).toBeUndefined();
+    expect(normalizeContent({ ...fixture, style: { theme: 'neon', highlight: '#000' } }).style).toBeUndefined();
+  });
+});
