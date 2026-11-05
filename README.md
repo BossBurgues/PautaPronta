@@ -209,8 +209,9 @@ A identidade padrão segue a HOTMILK, conforme a avaliação do Lucivandro:
 | Logo | Pequeno no rodapé de todos os slides, maior na capa e na conclusão; versão clara automática nos slides escuros |
 | Topo | Rótulo opcional (ex.: `CIS.IA / INSIGHTS`) e contador `02 / 06` |
 
-O **logo** e o **@ do rodapé** são enviados em Configurações. Um logo com fundo claro liso tem o fundo removido e as margens
-vazias cortadas automaticamente. Por ser marca de terceiros, o logo **não** fica no repositório: fica só no navegador de quem usa.
+O logo padrão é o oficial **HOTMILK + PUCPR** (`frontend/public/brand/`), enviado pelo Lucivandro, que usa esse logo no
+trabalho dele. Outro logo pode ser enviado em Configurações: se tiver fundo claro liso, o fundo é removido e as margens vazias
+são cortadas automaticamente. O **@ do rodapé** segue a conta onde o post vai ser publicado e é preenchido em Configurações.
 
 ### Composições de slide
 

@@ -1,7 +1,9 @@
-// Identidade padrão: HOTMILK (cores e fontes indicadas pelo Lucivandro na avaliação).
-// Logo e @ não vêm prontos: são enviados por ele na aba Configurações.
+// Identidade padrão: HOTMILK (cores, fontes e logo oficial HOTMILK + PUCPR indicados pelo Lucivandro).
+// O @ do rodapé depende da conta onde vai publicar: é preenchido na aba Configurações.
+export const DEFAULT_LOGO = '/brand/logo-hotmilk-pucpr.png';
+
 export const DEFAULT_PROFILE = {
-  logoDataUrl: '',
+  logoDataUrl: DEFAULT_LOGO,
   handle: '',
   kicker: '',
   titleFont: 'Saira',
