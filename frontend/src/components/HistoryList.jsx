@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 function formatDatePtBr(iso) {
   if (!iso) return '';
   try {
@@ -19,7 +21,10 @@ export default function HistoryList({
   onOpenInReview,
   onRemoveHistory,
   onClearHistory,
+  onSaveAsIdea,
 }) {
+  const [savedId, setSavedId] = useState(null);
+
   const handleOpen = (entry) => {
     const hasDifferentDraft =
       currentDraft && JSON.stringify(currentDraft) !== JSON.stringify(entry.content);
@@ -50,9 +55,9 @@ export default function HistoryList({
     <div className="history-page-wrapper">
       <div className="history-top-bar">
         <div>
-          <h2>Histórico de Gerações</h2>
+          <h2>Histórico de gerações</h2>
           <p className="history-disclaimer-note">
-            O histórico guarda a versão original gerada (até 20 mais recentes); edições posteriores ficam salvas no rascunho (`pp:draft`).
+            Aqui ficam os 20 carrosséis gerados mais recentes, como saíram da geração. As suas edições ficam salvas no rascunho da aba Revisar.
           </p>
         </div>
 
@@ -110,6 +115,17 @@ export default function HistoryList({
                     onClick={() => handleOpen(entry)}
                   >
                     Abrir na revisão
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => {
+                      onSaveAsIdea?.(entry);
+                      setSavedId(entry.id);
+                      setTimeout(() => setSavedId(null), 2500);
+                    }}
+                  >
+                    {savedId === entry.id ? '✓ Salvo em Ideias' : 'Reusar como ideia'}
                   </button>
                   <button
                     type="button"

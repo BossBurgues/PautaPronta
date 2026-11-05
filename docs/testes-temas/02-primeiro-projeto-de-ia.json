@@ -1,0 +1,24 @@
+{
+  "topic": "Como escolher um primeiro projeto de IA",
+  "slides": [
+    { "n": 1, "role": "capa", "title": "Seu primeiro projeto de IA: como escolher", "body": "Quatro critérios que aumentam a chance de sucesso: valor mensurável, viabilidade, dados prontos e riscos mapeados." },
+    { "n": 2, "role": "contexto", "layout": "texto", "title": "Primeiro, ganhar tração", "body": "Para Andrew Ng, é mais importante que os primeiros projetos de IA **deem certo** do que sejam os mais valiosos, sem serem tão pequenos a ponto de parecerem triviais [1].", "source": "Fonte: Andrew Ng, AI Transformation Playbook [1]" },
+    { "n": 3, "role": "ponto", "layout": "passos", "title": "Quatro perguntas antes de começar", "body": "Critérios das fontes para escolher o piloto:", "steps": [
+      { "label": "Valor", "text": "Há um objetivo de negócio claro e mensurável? [1]" },
+      { "label": "Viabilidade", "text": "É possível com a IA atual e mostra resultado em 6 a 12 meses? [1]" },
+      { "label": "Dados", "text": "Os dados representam o caso de uso, com erros e exceções? [2]" },
+      { "label": "Riscos", "text": "Os riscos foram mapeados, por exemplo com o NIST AI RMF? [3]" }
+    ], "source": "Fontes: Andrew Ng [1]; Gartner [2]; NIST [3]" },
+    { "n": 4, "role": "ponto", "layout": "destaque", "stat": "60%", "title": "Dados decidem o piloto", "body": "dos projetos de IA sem **dados prontos para IA** serão abandonados até 2026, prevê o Gartner, que ouviu 1.203 líderes de gestão de dados [2].", "source": "Fonte: Gartner, fevereiro de 2025 [2]" },
+    { "n": 5, "role": "conclusao", "title": "Pequeno, mensurável e viável", "body": "Escolha um processo delimitado, com dados disponíveis e meta clara. O **sucesso do piloto** ajuda a convencer a empresa a investir nos próximos projetos [1]." }
+  ],
+  "caption_linkedin": "Qual deve ser o primeiro projeto de IA de uma empresa? O AI Transformation Playbook, de Andrew Ng, dá um critério contraintuitivo: é mais importante que os primeiros projetos deem certo do que sejam os mais valiosos, com resultado visível em 6 a 12 meses e um objetivo de negócio mensurável. Os dados pesam tanto quanto a ideia: o Gartner prevê que, até 2026, 60% dos projetos de IA sem dados prontos para IA serão abandonados. E, para mapear riscos desde o início, o NIST AI RMF oferece um referencial gratuito e de uso voluntário. Informações verificadas em 5 de novembro de 2026.",
+  "caption_instagram": "Primeiro projeto de IA: quatro perguntas para escolher bem antes de começar. Salva e compartilha com o time.",
+  "hashtags": ["#InteligenciaArtificial", "#ProjetosDeIA", "#Inovacao", "#TransformacaoDigital"],
+  "cta": "Qual seria o primeiro projeto de IA da sua área?",
+  "sources": [
+    { "title": "Landing AI (Andrew Ng) — AI Transformation Playbook", "url": "https://landing.ai/wp-content/uploads/2020/05/LandingAI_Transformation_Playbook_11-19.pdf" },
+    { "title": "Gartner — Lack of AI-ready data puts AI projects at risk", "url": "https://www.gartner.com/en/newsroom/press-releases/2025-02-26-lack-of-ai-ready-data-puts-ai-projects-at-risk" },
+    { "title": "NIST — AI Risk Management Framework", "url": "https://www.nist.gov/itl/ai-risk-management-framework" }
+  ]
+}

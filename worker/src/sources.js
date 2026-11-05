@@ -21,9 +21,10 @@ export function verifySources(sources, { items = [], grounding = [] } = {}) {
     (items || []).map((it) => hostOf(it?.link)).filter(Boolean),
   );
 
+  // O Gemini põe o domínio no título ("mit.edu" ou "mit.edu: Título"); pega só esse começo.
   const groundingTitles = (grounding || [])
-    .map((g) => (g?.title || '').toLowerCase().trim())
-    .filter(Boolean);
+    .map((g) => (g?.title || '').toLowerCase().trim().split(/[\s:|]/)[0].replace(/^www\./, ''))
+    .filter((title) => title.includes('.'));
 
   const groundingHosts = new Set(
     (grounding || [])
@@ -46,7 +47,7 @@ export function verifySources(sources, { items = [], grounding = [] } = {}) {
 
     // 2. Igual ou termina com algum grounding.title (Gemini costuma colocar domínio no title)
     const matchesTitle = groundingTitles.some(
-      (title) => title === sHost || sHost.endsWith(title) || title.includes(sHost),
+      (title) => title === sHost || sHost.endsWith(`.${title}`),
     );
     if (matchesTitle) {
       return { ...src, verified: true };
@@ -78,11 +79,9 @@ export function buildUsedSources(items = [], grounding = []) {
 
   for (const g of grounding || []) {
     const url = g?.uri ? g.uri.trim() : '';
-    if (
-      url &&
-      !url.includes('vertexaisearch.cloud.google.com') &&
-      !seen.has(url)
-    ) {
+    // Os links da busca do Gemini são redirecionamentos do Google (vertexaisearch...), mas levam à
+    // página real; entram na lista de consultadas, com o domínio como título.
+    if (url && /^https:\/\//i.test(url) && !seen.has(url)) {
       seen.add(url);
       result.push({ title: g.title || '', url });
     }

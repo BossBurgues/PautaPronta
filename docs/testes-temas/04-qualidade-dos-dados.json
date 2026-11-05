@@ -1,0 +1,23 @@
+{
+  "topic": "Qualidade dos dados para projetos de IA",
+  "slides": [
+    { "n": 1, "role": "capa", "title": "Sem dados prontos, a IA não decola", "body": "Por que a qualidade dos dados decide o futuro de um projeto de IA e quais passos seguir para prepará-los." },
+    { "n": 2, "role": "contexto", "layout": "destaque", "stat": "63%", "title": "O tamanho do problema", "body": "das organizações não têm, ou não sabem se têm, práticas de gestão de dados adequadas para IA, segundo pesquisa do Gartner com **1.203 líderes de dados** [1].", "source": "Fonte: Gartner, pesquisa de julho de 2024 [1]" },
+    { "n": 3, "role": "ponto", "layout": "texto", "title": "O que são dados prontos para IA", "body": "São dados que **representam o caso de uso**: todos os padrões, erros, exceções e situações inesperadas de que o modelo precisa para treinar ou funcionar [1].", "source": "Fonte: Gartner, fevereiro de 2025 [1]" },
+    { "n": 4, "role": "ponto", "layout": "passos", "title": "Como preparar os dados", "body": "Passos recomendados pelo Gartner [1]:", "steps": [
+      { "label": "Alinhar", "text": "Escolher fontes internas e externas para o caso de uso." },
+      { "label": "Governar", "text": "Definir requisitos legais e éticos e proteger dados sensíveis." },
+      { "label": "Preparar", "text": "Tornar os metadados ativos e montar os fluxos de treino e produção." },
+      { "label": "Testar e monitorar", "text": "Validar e acompanhar a **qualidade** de forma contínua." }
+    ], "source": "Fonte: Gartner, fevereiro de 2025 [1]" },
+    { "n": 5, "role": "conclusao", "title": "Dado pronto não é tarefa única", "body": "Para o Gartner, preparar dados para IA é uma **prática contínua** [1]. Referenciais como o NIST AI RMF ajudam a governar, mapear, medir e gerenciar esses riscos [2]." }
+  ],
+  "caption_linkedin": "Muitos projetos de IA não param no modelo, e sim nos dados. Uma pesquisa do Gartner com 1.203 líderes de gestão de dados mostrou que 63% das organizações não têm, ou não sabem se têm, as práticas necessárias para IA, e a consultoria prevê que 60% dos projetos sem dados prontos serão abandonados até 2026. Dados prontos para IA são os que representam o caso de uso, incluindo erros e exceções. Os passos vão de alinhar as fontes ao caso de uso até testar e monitorar a qualidade continuamente; o NIST AI RMF complementa com um referencial de gestão de riscos. Informações verificadas em 5 de novembro de 2026.",
+  "caption_instagram": "Dados ruins derrubam projetos de IA. Veja o que são dados prontos para IA e os passos para chegar lá.",
+  "hashtags": ["#QualidadeDeDados", "#InteligenciaArtificial", "#GovernancaDeDados", "#Inovacao"],
+  "cta": "Os dados da sua empresa estão prontos para IA?",
+  "sources": [
+    { "title": "Gartner — Lack of AI-ready data puts AI projects at risk", "url": "https://www.gartner.com/en/newsroom/press-releases/2025-02-26-lack-of-ai-ready-data-puts-ai-projects-at-risk" },
+    { "title": "NIST — AI Risk Management Framework", "url": "https://www.nist.gov/itl/ai-risk-management-framework" }
+  ]
+}

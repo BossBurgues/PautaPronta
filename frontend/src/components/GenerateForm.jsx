@@ -2,6 +2,41 @@ import { useState, useEffect, useRef } from 'react';
 import { generate } from '../api.js';
 import AssistedPanel from './AssistedPanel.jsx';
 import SuggestionsCard from './SuggestionsCard.jsx';
+import { applyVisualFormat } from '../state/draftOps.js';
+import { DEFAULT_TONE, DEFAULT_AUDIENCE, DEFAULT_VISUAL_FORMAT } from '../../../shared/prompt.js';
+
+// Rótulos das opções (as chaves são as mesmas que o Worker aceita).
+const AUDIENCE_LABELS = {
+  gestores: 'Gestores e líderes',
+  executivos: 'Executivos e alta gestão',
+  pesquisadores: 'Pesquisadores e academia',
+  startups: 'Empreendedores e startups',
+  geral: 'Público geral',
+};
+const TONE_LABELS = {
+  'profissional-acessivel': 'Profissional, acessível e direto',
+  'profissional-didatico': 'Profissional e didático',
+  'direto-pratico': 'Direto e prático',
+  analitico: 'Analítico, com dados',
+};
+const FORMAT_LABELS = {
+  texto: 'Texto',
+  infografico: 'Infográfico (números e passos)',
+  'texto-imagem': 'Texto + imagem',
+};
+
+function SelectField({ id, label, value, onChange, options, disabled }) {
+  return (
+    <div className="form-group">
+      <label htmlFor={id} className="form-label-row">{label}</label>
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+        {Object.entries(options).map(([key, text]) => (
+          <option key={key} value={key}>{text}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 export default function GenerateForm({
   config,
@@ -15,7 +50,9 @@ export default function GenerateForm({
   const [formats, setFormats] = useState(defaults.formats || ['linkedin', 'instagram']);
   const [slideCount, setSlideCount] = useState(defaults.slideCount || 5);
   const [useWebSearch, setUseWebSearch] = useState(defaults.useWebSearch || false);
-  const [tone, setTone] = useState(defaults.tone || 'profissional-didatico');
+  const [tone, setTone] = useState(defaults.tone || DEFAULT_TONE);
+  const [audience, setAudience] = useState(defaults.audience || DEFAULT_AUDIENCE);
+  const [visualFormat, setVisualFormat] = useState(defaults.visualFormat || DEFAULT_VISUAL_FORMAT);
 
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
@@ -80,11 +117,13 @@ export default function GenerateForm({
         formats,
         useWebSearch,
         tone,
+        audience,
+        visualFormat,
       });
 
       setStatus('idle');
       onSuccess?.({
-        content: res.content,
+        content: applyVisualFormat(res.content, visualFormat),
         theme: themeTrimmed || res.content?.topic,
         mode: 'online',
         usedSources: res.usedSources || [],
@@ -119,11 +158,14 @@ export default function GenerateForm({
           theme={themeTrimmed || 'Tema do carrossel'}
           slideCount={slideCount}
           tone={tone}
+          audience={audience}
+          visualFormat={visualFormat}
           feedUrls={feedUrls}
+          sites={config?.referenceSites || []}
           onSuccess={(content) => {
             setShowAssisted(false);
             onSuccess?.({
-              content,
+              content: applyVisualFormat(content, visualFormat),
               theme: themeTrimmed || content?.topic,
               mode: 'assistido',
               usedSources: [],
@@ -186,10 +228,10 @@ export default function GenerateForm({
         {!hasToken && (
           <div className="callout callout-info" role="note">
             <div className="callout-content">
-              <strong>Token de acesso não configurado</strong>
+              <strong>Falta o token de acesso</strong>
               <p>
-                Para gerar carrosséis diretamente via Worker/API, configure seu token de acesso.
-                Você também pode usar o modo assistido a qualquer momento sem precisar de token.
+                Para gerar direto pela ferramenta, informe o token em Configurações. Sem ele, o modo
+                assistido funciona normalmente.
               </p>
             </div>
             <div className="callout-actions">
@@ -198,7 +240,7 @@ export default function GenerateForm({
                 className="primary"
                 onClick={onNavigateToConfig}
               >
-                Ir para Config
+                Ir para Configurações
               </button>
               <button
                 type="button"
@@ -286,6 +328,18 @@ export default function GenerateForm({
             </div>
           </div>
 
+          {/* Público, tom e formato visual */}
+          <div className="generate-options-grid three">
+            <SelectField id="gen-audience" label="Público" value={audience} onChange={setAudience} options={AUDIENCE_LABELS} disabled={status === 'loading'} />
+            <SelectField id="gen-tone" label="Tom" value={tone} onChange={setTone} options={TONE_LABELS} disabled={status === 'loading'} />
+            <SelectField id="gen-format" label="Formato visual" value={visualFormat} onChange={setVisualFormat} options={FORMAT_LABELS} disabled={status === 'loading'} />
+          </div>
+          {visualFormat === 'texto-imagem' && (
+            <p className="field-hint">
+              Os slides já vêm com espaço para imagem. Você insere e recorta as imagens na aba Revisar.
+            </p>
+          )}
+
           {/* Toggle Buscar na web */}
           <div className="form-group toggle-group-box">
             <label className="checkbox-label toggle-label">
@@ -295,10 +349,10 @@ export default function GenerateForm({
                 onChange={(e) => setUseWebSearch(e.target.checked)}
                 disabled={status === 'loading'}
               />
-              <span className="toggle-text">Buscar na web via Google Search</span>
+              <span className="toggle-text">Buscar na web</span>
             </label>
             <span className="toggle-hint">
-              Pesquisa fontes recentes na internet ao vivo. (Dica: usa mais cota gratuita; deixe desligado nos testes).
+              Pesquisa fontes recentes, priorizando os seus sites de referência. Usa mais da cota gratuita.
             </span>
           </div>
 
@@ -313,7 +367,7 @@ export default function GenerateForm({
               >
                 {status === 'loading'
                   ? 'Pesquisando fontes e escrevendo… pode levar até 1 minuto'
-                  : 'Gerar Carrossel'}
+                  : 'Gerar carrossel'}
               </button>
             ) : null}
 
@@ -323,7 +377,7 @@ export default function GenerateForm({
               onClick={() => setShowAssisted(true)}
               disabled={status === 'loading'}
             >
-              Modo assistido (gratuito / sem servidor)
+              Usar modo assistido
             </button>
 
             <button

@@ -8,7 +8,20 @@ export function checkToken(c) {
   }
 
   const authHeader = c.req.header('Authorization') || '';
-  return authHeader === `Bearer ${token}`;
+  return safeEqual(authHeader, `Bearer ${token}`);
+}
+
+/**
+ * Compara strings sem sair no primeiro caractere diferente (evita ataque de tempo).
+ */
+export function safeEqual(a, b) {
+  const x = String(a);
+  const y = String(b);
+  let diff = x.length ^ y.length;
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    diff |= (x.charCodeAt(i) || 0) ^ (y.charCodeAt(i) || 0);
+  }
+  return diff === 0;
 }
 
 /**

@@ -17,9 +17,32 @@ function isValidFeedUrl(url) {
 export default function FeedsForm({
   feeds = [],
   defaults = {},
+  referenceSites = [],
   onUpdateFeeds,
+  onUpdateReferenceSites,
   onUpdateDefaults,
 }) {
+  const [newSite, setNewSite] = useState('');
+  const [siteMessage, setSiteMessage] = useState('');
+  const handleAddSite = (e) => {
+    e.preventDefault();
+    const url = newSite.trim();
+    if (!isValidFeedUrl(url)) {
+      setSiteMessage('Informe um endereço completo, começando com https://');
+      return;
+    }
+    if (referenceSites.includes(url)) {
+      setSiteMessage('Este site já está na lista.');
+      return;
+    }
+    if (referenceSites.length >= 8) {
+      setSiteMessage('Máximo de 8 sites de referência.');
+      return;
+    }
+    onUpdateReferenceSites?.([...referenceSites, url]);
+    setNewSite('');
+    setSiteMessage('');
+  };
   const [newName, setNewName] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [feedMessage, setFeedMessage] = useState('');
@@ -178,10 +201,48 @@ export default function FeedsForm({
         </form>
       </div>
 
+      {/* Sites de referência (sem RSS) */}
+      <div className="feeds-form-card">
+        <div className="feeds-form-header">
+          <h3>Sites de referência</h3>
+          <p className="feeds-form-description">
+            Sites confiáveis que não têm RSS. Com a busca na web ligada, a pesquisa começa por eles.
+            ({referenceSites.length} / 8)
+          </p>
+        </div>
+        <ul className="sites-list">
+          {referenceSites.map((site) => (
+            <li key={site} className="feed-item">
+              <span className="feed-url">{site}</span>
+              <button
+                type="button"
+                className="btn-danger-outline"
+                onClick={() => onUpdateReferenceSites?.(referenceSites.filter((s) => s !== site))}
+              >
+                Remover
+              </button>
+            </li>
+          ))}
+        </ul>
+        <form className="add-site-row" onSubmit={handleAddSite}>
+          <input
+            type="url"
+            value={newSite}
+            onChange={(e) => setNewSite(e.target.value)}
+            placeholder="https://exemplo.org/"
+            aria-label="Endereço do site de referência"
+          />
+          <button type="submit" className="primary">
+            + Adicionar site
+          </button>
+        </form>
+        {siteMessage && <p className="field-hint-error">{siteMessage}</p>}
+      </div>
+
       {/* Bloco Padrões de Geração */}
       <div className="defaults-form-card">
         <div className="feeds-form-header">
-          <h3>Padrões de Geração</h3>
+          <h3>Padrões de geração</h3>
           <p className="feeds-form-description">
             Valores iniciais que preenchem automaticamente a tela Gerar.
           </p>
@@ -210,11 +271,13 @@ export default function FeedsForm({
             </label>
             <select
               id="default-tone"
-              value={defaults.tone || 'profissional-didatico'}
+              value={defaults.tone || 'profissional-acessivel'}
               onChange={(e) => onUpdateDefaults({ tone: e.target.value })}
             >
+              <option value="profissional-acessivel">Profissional, acessível e direto</option>
               <option value="profissional-didatico">Profissional e didático</option>
               <option value="direto-pratico">Direto e prático</option>
+              <option value="analitico">Analítico, com dados</option>
             </select>
           </div>
         </div>

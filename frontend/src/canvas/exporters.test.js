@@ -22,7 +22,8 @@ describe('canvas/exporters', () => {
     expect(caption).toContain(fixture.cta);
     expect(caption).toContain('#LGPD');
     expect(caption).toContain('#ProtecaoDeDados');
-    expect(caption).toContain('Fontes:');
+    expect(caption).toContain('Fontes consultadas:');
+    expect(caption).toContain('[1] Lei nº 13.709/2018 (LGPD) — Planalto — https://www.planalto.gov.br');
     expect(caption).toContain('https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm');
     expect(caption).toContain('https://www.gov.br/anpd/pt-br');
   });
@@ -33,7 +34,7 @@ describe('canvas/exporters', () => {
     expect(caption).toContain(fixture.caption_instagram);
     expect(caption).toContain(fixture.cta);
     expect(caption).toContain('#LGPD');
-    expect(caption).not.toContain('Fontes:');
+    expect(caption).not.toContain('Fontes consultadas');
     expect(caption).not.toContain('https://www.planalto.gov.br');
   });
 });

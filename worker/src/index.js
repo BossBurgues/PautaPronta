@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { normalizeContent, validateContent } from '../../shared/schema.js';
 import { extractJson } from '../../shared/json.js';
+import { TONES, AUDIENCES, VISUAL_FORMATS, DEFAULT_TONE, DEFAULT_AUDIENCE, DEFAULT_VISUAL_FORMAT } from '../../shared/prompt.js';
 import { fetchFeeds } from './rss.js';
 import {
   generateCarousel,
@@ -75,7 +76,14 @@ app.post('/api/generate', async (c) => {
     );
   }
 
-  const tone = body.tone || 'profissional-didatico';
+  // Só valores das listas fixas chegam ao prompt (o texto livre do cliente nunca vai cru para a IA).
+  const tone = Object.hasOwn(TONES, body.tone) ? body.tone : DEFAULT_TONE;
+  const audience = Object.hasOwn(AUDIENCES, body.audience) ? body.audience : DEFAULT_AUDIENCE;
+  const visualFormat = Object.hasOwn(VISUAL_FORMATS, body.visualFormat) ? body.visualFormat : DEFAULT_VISUAL_FORMAT;
+  const sites = (Array.isArray(body.sites) ? body.sites : [])
+    .filter((u) => typeof u === 'string' && /^https?:\/\/[^\s]+$/i.test(u.trim()) && u.length <= 200)
+    .map((u) => u.trim())
+    .slice(0, 8);
   const useWebSearch = Boolean(body.useWebSearch);
 
   const rawSources = Array.isArray(body.sources) ? body.sources : [];
@@ -112,7 +120,10 @@ app.post('/api/generate', async (c) => {
       theme,
       slideCount,
       tone,
+      audience,
+      visualFormat,
       items: feedResult.items,
+      sites,
       useWebSearch,
     });
 
@@ -153,7 +164,7 @@ app.post('/api/generate', async (c) => {
 
     if (err instanceof AiError) {
       let msg = err.message;
-      if (err.status === 400 && /API key/i.test(err.message)) {
+      if (err.status === 400 && /API key/i.test(err.detail || '')) {
         msg = 'Chave do Gemini inválida. Confira o .dev.vars / secret.';
       }
       return fail(c, 502, 'ai_error', msg, { fallbackToAssisted: true });
@@ -303,7 +314,7 @@ app.post('/api/suggestions/run', async (c) => {
 
     if (err instanceof AiError) {
       let msg = err.message;
-      if (err.status === 400 && /API key/i.test(err.message)) {
+      if (err.status === 400 && /API key/i.test(err.detail || '')) {
         msg = 'Chave do Gemini inválida. Confira o .dev.vars / secret.';
       }
       return fail(c, 502, 'ai_error', msg, { fallbackToAssisted: true });

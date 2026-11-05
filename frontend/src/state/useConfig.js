@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { load, save } from './storage.js';
-import { DEFAULT_PROFILE } from './defaults.js';
+import { DEFAULT_PROFILE, migrateProfile } from './defaults.js';
+import { DEFAULT_TONE, DEFAULT_AUDIENCE, DEFAULT_VISUAL_FORMAT } from '../../../shared/prompt.js';
 
 const CONFIG_KEY = 'config';
 
@@ -8,23 +9,27 @@ export const DEFAULT_CONFIG = {
   apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:8787',
   token: '',
   profile: DEFAULT_PROFILE,
+  // Feeds RSS indicados na avaliação (os sites sem RSS ficam em referenceSites).
   feeds: [
-    {
-      name: 'MIT Technology Review',
-      url: 'https://www.technologyreview.com/feed/',
-      enabled: true,
-    },
-    {
-      name: 'Agência Brasil',
-      url: 'https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml',
-      enabled: true,
-    },
+    { name: 'HOTMILK', url: 'https://hotmilk.com.br/feed/', enabled: true },
+    { name: 'NIST — notícias', url: 'https://www.nist.gov/news-events/news/rss.xml', enabled: true },
+    { name: 'MIT Technology Review', url: 'https://www.technologyreview.com/feed/', enabled: true },
+  ],
+  // Sites de referência sem RSS: a IA prioriza pesquisar neles quando a busca na web está ligada.
+  referenceSites: [
+    'https://hotmilk.com.br/pdi/',
+    'https://hai.stanford.edu/',
+    'https://oecd.ai/en/',
+    'https://www.nist.gov/itl/ai-risk-management-framework',
+    'https://www.finep.gov.br/',
   ],
   defaults: {
     slideCount: 5,
     formats: ['linkedin', 'instagram'],
-    useWebSearch: false,
-    tone: 'profissional-didatico',
+    useWebSearch: true,
+    tone: DEFAULT_TONE,
+    audience: DEFAULT_AUDIENCE,
+    visualFormat: DEFAULT_VISUAL_FORMAT,
   },
 };
 
@@ -32,23 +37,16 @@ function mergeConfig(saved) {
   if (!saved || typeof saved !== 'object') {
     return DEFAULT_CONFIG;
   }
-  const savedProfile = saved.profile && typeof saved.profile === 'object' ? saved.profile : {};
   return {
     ...DEFAULT_CONFIG,
     ...saved,
-    profile: {
-      ...DEFAULT_PROFILE,
-      ...savedProfile,
-      colors: {
-        ...DEFAULT_PROFILE.colors,
-        ...(savedProfile.colors || {}),
-      },
-    },
+    profile: migrateProfile(saved.profile),
     defaults: {
       ...DEFAULT_CONFIG.defaults,
       ...(saved.defaults || {}),
     },
     feeds: Array.isArray(saved.feeds) ? saved.feeds : DEFAULT_CONFIG.feeds,
+    referenceSites: Array.isArray(saved.referenceSites) ? saved.referenceSites : DEFAULT_CONFIG.referenceSites,
   };
 }
 
@@ -112,9 +110,13 @@ export function useConfig() {
     const prev = configRef.current;
     const next = {
       ...prev,
+      // Restaurar padrão mantém logo e @, que são do usuário.
       profile: {
         ...DEFAULT_PROFILE,
         colors: { ...DEFAULT_PROFILE.colors },
+        logoDataUrl: prev.profile.logoDataUrl,
+        handleLinkedin: prev.profile.handleLinkedin,
+        handleInstagram: prev.profile.handleInstagram,
       },
     };
     const ok = save(CONFIG_KEY, next);
@@ -128,6 +130,17 @@ export function useConfig() {
   const updateFeeds = useCallback((feeds) => {
     const prev = configRef.current;
     const next = { ...prev, feeds: Array.isArray(feeds) ? feeds : [] };
+    const ok = save(CONFIG_KEY, next);
+    if (ok) {
+      configRef.current = next;
+      setConfigState(next);
+    }
+    return ok;
+  }, []);
+
+  const updateReferenceSites = useCallback((sites) => {
+    const prev = configRef.current;
+    const next = { ...prev, referenceSites: Array.isArray(sites) ? sites : [] };
     const ok = save(CONFIG_KEY, next);
     if (ok) {
       configRef.current = next;
@@ -160,6 +173,7 @@ export function useConfig() {
     updateProfile,
     resetProfile,
     updateFeeds,
+    updateReferenceSites,
     updateDefaults,
   };
 }

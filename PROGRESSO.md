@@ -61,9 +61,10 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 - [x] **Validação humana**
 
 ### 🏁 Marco M2 — 5 temas reais gerados localmente
-- [ ] Feito
-- Ajustes de prompt:
-  -
+- [x] Feito em 05/11/2026 pelo modo assistido (Claude como assistente), com fontes lidas na origem — `docs/testes-temas/`
+- [ ] Repetir 1 ou 2 temas no modo online quando existir a chave do Gemini do Lucivandro
+- Ajustes:
+  - conclusão: fontes longas usam até 2 linhas e terminam em "…" (antes eram cortadas sem aviso)
 
 ## F6 — Perfil, ideias, histórico · `prompts/fase-06-perfil-ideias-historico.md`
 - [x] ProfileForm (logo redimensionado, cores, fonte, @, contraste)
@@ -78,6 +79,39 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 - [x] `scheduled`, `GET /api/suggestions`, `POST /api/suggestions/run`
 - [x] `SuggestionsCard`
 - [x] Cron testado localmente
+- [ ] **Validação humana**
+
+## Auditoria (25/10/2026) — branch `fix/auditoria-edicao-mobile-seguranca`
+- [x] Editor aceita espaço/Enter no fim do texto e "Adicionar fonte" (state/draftOps.js + testes)
+- [x] Celular: seletor Editar/Prévia, abas com rolagem, seletor de papel sem corte
+- [x] Segurança: CSP (`frontend/public/_headers`), links só http(s), proteção contra prompt injection,
+      tom em lista fixa, erro do Gemini só no log, token em tempo constante, verificação de fonte por domínio exato
+- [x] README didático e fluxo de branches `dev`/`prod`
+- [x] Pendências da auditoria: fontes servidas pelo próprio app (LGPD, CSP sem Google), backup/restauração dos dados,
+      aviso de cópia real no modo assistido, motivo do erro de feed, exemplo de JSON com o nº de slides pedido,
+      jsPDF/JSZip sob demanda (bundle 793→302 KB), logo limitado a 360×72, ideia "usada" só quando o tema dela é gerado,
+      aria-current/foco visível/menos animação, HTML escapado no RSS, fontes da busca web em "Fontes consultadas",
+      botão "Descartar rascunho"
+- [ ] **Validação humana**
+
+## Avaliação do Lucivandro (04/11/2026) — branch `feat/avaliacao-lucivandro`
+Base: `docs/Avaliacao_Design_PautaPronta preenchida.pdf` e `docs/Exemplodeartigodasemana.docx` (padrão de qualidade).
+- [x] Onda 1 — identidade HOTMILK (paleta, Saira + Open Sans locais, capa/conclusão escuras, meio claro, fundo por slide,
+      cor dos destaques, rótulo do topo, títulos em maiúsculas), logo maior na capa/conclusão e @ alinhado, logo claro
+      automático nos slides escuros, fundo claro do logo removido e margens cortadas, tamanho mínimo de letra com aviso
+      "resuma", slide extra de fontes (> 3), botões com nomes diretos, "Acesso à ferramenta", sem "pp:draft", botão do
+      logo com estilo, links sem palavra partida, modo assistido com exemplo + ChatGPT/Copilot + erros simples,
+      prompt no padrão do artigo (fontes [n], ressalvas, termos explicados), novos temas e feeds, sites de referência
+- [x] Onda 2 — imagem no slide (inserir, trocar, recortar com zoom e posição), composições imagem em cima/ao lado/de
+      fundo, reordenar slides, negrito com **, público/tom/formato visual na tela Gerar
+- [x] Onda 3 — composições "número em destaque" e "passos numerados" (a IA escolhe), busca sem acento e reuso no banco
+      de ideias e no histórico, campos de 16 px no celular
+- [x] 5 temas dele testados pelo modo assistido (ver Marco M2); falta repetir no modo online com a chave do Gemini
+- [x] Logo oficial HOTMILK + PUCPR confirmado e definido como padrão (`frontend/public/brand/`)
+- [ ] @ do rodapé (depende da conta onde ele vai publicar)
+- [x] Ajustes finais (05/11): @ separado para LinkedIn e Instagram, PDF sem perda (PNG), cor secundária legível nos
+      slides escuros, visual por carrossel (fundos e destaques), título fino como no site da HOTMILK (comparado em
+      hotmilk.com.br/pdi), @ longo nunca encosta no logo
 - [ ] **Validação humana**
 
 ## F8 — Deploy e entrega · `prompts/fase-08-deploy-entrega.md`

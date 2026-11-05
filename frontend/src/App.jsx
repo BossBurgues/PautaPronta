@@ -11,13 +11,14 @@ import FeedsForm from './components/FeedsForm.jsx';
 import AccessForm from './components/AccessForm.jsx';
 import IdeaBank from './components/IdeaBank.jsx';
 import HistoryList from './components/HistoryList.jsx';
+import DataBackup from './components/DataBackup.jsx';
 
 const TABS = [
   { id: 'gerar', label: 'Gerar' },
-  { id: 'revisao', label: 'Revisão' },
+  { id: 'revisao', label: 'Revisar' },
   { id: 'ideias', label: 'Ideias' },
   { id: 'historico', label: 'Histórico' },
-  { id: 'config', label: 'Config' },
+  { id: 'config', label: 'Configurações' },
 ];
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
     updateProfile,
     resetProfile,
     updateFeeds,
+    updateReferenceSites,
     updateDefaults,
   } = useConfig();
 
@@ -37,7 +39,8 @@ export default function App() {
   const [usedSources, setUsedSources] = useState([]);
   const [feedErrors, setFeedErrors] = useState([]);
   const [initialTheme, setInitialTheme] = useState('');
-  const [activeIdeaId, setActiveIdeaId] = useState(null);
+  // Ideia que originou o tema atual da aba Gerar: { id, theme }.
+  const [activeIdea, setActiveIdea] = useState(null);
   const [logoImg, setLogoImg] = useState(null);
 
   const {
@@ -47,6 +50,8 @@ export default function App() {
     updateField,
     addSlide,
     removeSlide,
+    moveSlide,
+    saveFailed,
   } = useDraft();
 
   const profile = config.profile;
@@ -76,10 +81,12 @@ export default function App() {
       content: newContent,
     });
 
-    if (activeIdeaId) {
-      markIdeaUsed(activeIdeaId);
-      setActiveIdeaId(null);
+    // Só marca a ideia como usada se o tema gerado ainda for o dela (o usuário pode ter trocado de tema).
+    if (activeIdea && (genTheme || '').startsWith(activeIdea.theme)) {
+      markIdeaUsed(activeIdea.id);
     }
+    setActiveIdea(null);
+    setInitialTheme('');
 
     setActiveTab('revisao');
   };
@@ -87,7 +94,7 @@ export default function App() {
   const handleGenerateFromIdea = (idea) => {
     const combined = (idea.theme + (idea.notes ? ` — ${idea.notes}` : '')).slice(0, 200);
     setInitialTheme(combined);
-    setActiveIdeaId(idea.id);
+    setActiveIdea({ id: idea.id, theme: combined });
     setActiveTab('gerar');
   };
 
@@ -112,6 +119,7 @@ export default function App() {
             key={tab.id}
             type="button"
             className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+            aria-current={activeTab === tab.id ? 'page' : undefined}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
@@ -138,6 +146,8 @@ export default function App() {
             updateField={updateField}
             addSlide={addSlide}
             removeSlide={removeSlide}
+            moveSlide={moveSlide}
+            saveFailed={saveFailed}
             profile={profile}
             logoImg={logoImg}
             usedSources={usedSources}
@@ -162,6 +172,7 @@ export default function App() {
             onOpenInReview={handleOpenHistoryInReview}
             onRemoveHistory={removeHistory}
             onClearHistory={clearHistory}
+            onSaveAsIdea={(entry) => addIdea({ theme: entry.theme, notes: 'Pauta reaproveitada do histórico', links: (entry.content?.sources || []).map((s) => s.url) })}
           />
         )}
 
@@ -175,6 +186,8 @@ export default function App() {
             />
             <FeedsForm
               feeds={config.feeds}
+              referenceSites={config.referenceSites}
+              onUpdateReferenceSites={updateReferenceSites}
               defaults={config.defaults}
               onUpdateFeeds={updateFeeds}
               onUpdateDefaults={updateDefaults}
@@ -183,6 +196,7 @@ export default function App() {
               config={config}
               onUpdateAccess={updateAccess}
             />
+            <DataBackup config={config} ideas={ideas} history={history} />
           </div>
         )}
       </main>
