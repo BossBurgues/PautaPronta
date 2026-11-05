@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { wrapText, fitText, tokenizeRich, wrapRich, fitRich, getRenderSlides, slideTheme, mix } from './renderSlide.js';
+import { wrapText, fitText, tokenizeRich, wrapRich, fitRich, getRenderSlides, slideTheme, mix, clampLines } from './renderSlide.js';
 
 describe('canvas/renderSlide', () => {
   const measure = (s) => s.length * 10;
@@ -103,5 +103,18 @@ describe('texto rico e lista de slides', () => {
 
   it('mix mistura cores', () => {
     expect(mix('#000000', '#ffffff', 0.5)).toBe('#808080');
+  });
+});
+
+describe('clampLines', () => {
+  const measure = (s) => s.length * 10;
+  it('mantém o texto inteiro quando cabe', () => {
+    expect(clampLines('aa bb', 100, measure, 2)).toEqual(['aa bb']);
+  });
+  it('corta em maxLines e termina com reticências, sem traço solto', () => {
+    const lines = clampLines('[1] Gartner — Over 40% of agentic AI projects will be canceled by end of 2027', 200, measure, 2);
+    expect(lines).toHaveLength(2);
+    expect(lines[1].endsWith('…')).toBe(true);
+    expect(lines.join(' ').length).toBeLessThan(80);
   });
 });

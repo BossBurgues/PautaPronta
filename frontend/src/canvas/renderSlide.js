@@ -573,6 +573,17 @@ function layoutImagem(ctx, { slide, profile, pal, fonts, area, assets, preview }
   return tr.overflow || br.overflow;
 }
 
+/** Quebra em até maxLines linhas; se sobrar texto, a última termina em "…" (nunca corta calado). */
+export function clampLines(text, maxWidth, measure, maxLines) {
+  const lines = wrapText(text, maxWidth, measure);
+  if (lines.length <= maxLines) return lines;
+  const kept = lines.slice(0, maxLines);
+  let last = kept[maxLines - 1];
+  while (last && measure(`${last}…`) > maxWidth) last = last.slice(0, -1);
+  kept[maxLines - 1] = `${last.replace(/[\s—–-]+$/, '')}…`;
+  return kept;
+}
+
 function shortSource(src, n) {
   let domain = '';
   try {
@@ -612,10 +623,17 @@ function layoutConclusao(ctx, { slide, content, profile, pal, fonts, area }) {
     y += 42;
     ctx.font = `400 28px "${fonts.body}", sans-serif`;
     const shown = sources.length > MAX_SOURCES_ON_CONCLUSION ? [] : sources;
+    const bottom = area.y + area.h;
     shown.forEach((src, i) => {
-      const line = wrapText(shortSource(src, i + 1), area.w, (s) => ctx.measureText(s).width)[0];
-      ctx.fillText(line, area.x, y);
-      y += 40;
+      for (const line of clampLines(shortSource(src, i + 1), area.w, (s) => ctx.measureText(s).width, 2)) {
+        if (y + 36 > bottom) {
+          overflow = true; // não invade o rodapé: o aviso "texto não coube" pede para resumir
+          return;
+        }
+        ctx.fillText(line, area.x, y);
+        y += 36;
+      }
+      y += 6;
     });
     if (!shown.length) ctx.fillText(`${sources.length} referências numeradas no próximo slide.`, area.x, y);
   }
@@ -633,7 +651,7 @@ function layoutFontes(ctx, { content, profile, pal, fonts, area }) {
   };
   let overflow = false;
   for (let i = 0; i < sources.length; i++) {
-    const lines = wrapText(shortSource(sources[i], i + 1), area.w, measure).slice(0, 2);
+    const lines = clampLines(shortSource(sources[i], i + 1), area.w, measure, 2);
     if (y + lines.length * 40 > area.y + area.h) {
       overflow = true;
       break;
