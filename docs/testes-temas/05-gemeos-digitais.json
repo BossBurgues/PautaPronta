@@ -1,0 +1,24 @@
+{
+  "topic": "Gêmeos digitais: aplicações práticas nos negócios",
+  "slides": [
+    { "n": 1, "role": "capa", "title": "Gêmeos digitais na prática", "body": "O que são, quais os tipos e onde já geram valor nos negócios, de fábricas a cadeias de suprimentos." },
+    { "n": 2, "role": "contexto", "layout": "texto", "title": "Uma cópia viva do mundo real", "body": "Um **gêmeo digital** é uma réplica virtual de um objeto, pessoa, sistema ou processo, ligada a dados reais e atualizada em tempo real [1].", "source": "Fonte: McKinsey, What is digital-twin technology? [1]" },
+    { "n": 3, "role": "ponto", "layout": "texto", "title": "Não é só uma simulação", "body": "Simulações costumam existir só no mundo virtual. O gêmeo digital fica **conectado ao sistema físico**, com dados de sensores e dispositivos de internet das coisas (IoT) [2].", "source": "Fonte: IBM, What is a digital twin? [2]" },
+    { "n": 4, "role": "ponto", "layout": "passos", "title": "Quatro tipos de gêmeo digital", "body": "A classificação da McKinsey [1]:", "steps": [
+      { "label": "Produto", "text": "Representa um produto, do projeto ao uso." },
+      { "label": "Dados", "text": "Ex.: o Google Maps, com trânsito em tempo real." },
+      { "label": "Sistemas", "text": "Processos como produção e cadeia de suprimentos." },
+      { "label": "Infraestrutura", "text": "Rodovias, edifícios ou estádios." }
+    ], "source": "Fonte: McKinsey, agosto de 2024 [1]" },
+    { "n": 5, "role": "ponto", "layout": "destaque", "stat": "70%", "title": "Interesse no topo", "body": "dos executivos de tecnologia de grandes empresas **já exploram ou investem** em gêmeos digitais, segundo a McKinsey [1].", "source": "Fonte: McKinsey, agosto de 2024 [1]" },
+    { "n": 6, "role": "conclusao", "title": "Comece por um componente crítico", "body": "Um projeto pode começar por **um componente crítico** e se expandir para o produto inteiro à medida que a maturidade digital aumenta [1]." }
+  ],
+  "caption_linkedin": "Um gêmeo digital é uma réplica virtual de um objeto, sistema ou processo, ligada a dados reais e atualizada em tempo real. A diferença para uma simulação comum, explica a IBM, é a conexão com o sistema físico por meio de sensores e dispositivos de IoT. A McKinsey organiza os gêmeos em quatro tipos (produto, dados, sistemas e infraestrutura) e aponta que 70% dos executivos de tecnologia de grandes empresas já exploram ou investem na tecnologia. A recomendação prática é começar por um componente crítico e ampliar conforme a maturidade digital cresce. Informações verificadas em 5 de novembro de 2026.",
+  "caption_instagram": "Gêmeos digitais: o que são, os 4 tipos e por onde começar. Arrasta pro lado.",
+  "hashtags": ["#GemeosDigitais", "#DigitalTwin", "#Inovacao", "#Industria40"],
+  "cta": "Que processo da sua empresa ganharia com um gêmeo digital?",
+  "sources": [
+    { "title": "McKinsey — What is digital-twin technology?", "url": "https://www.mckinsey.com/featured-insights/mckinsey-explainers/what-is-digital-twin-technology" },
+    { "title": "IBM — What is a digital twin?", "url": "https://www.ibm.com/think/topics/what-is-a-digital-twin" }
+  ]
+}

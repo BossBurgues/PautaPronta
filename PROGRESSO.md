@@ -61,9 +61,10 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 - [x] **Validação humana**
 
 ### 🏁 Marco M2 — 5 temas reais gerados localmente
-- [ ] Feito
-- Ajustes de prompt:
-  -
+- [x] Feito em 05/11/2026 pelo modo assistido (Claude como assistente), com fontes lidas na origem — `docs/testes-temas/`
+- [ ] Repetir 1 ou 2 temas no modo online quando existir a chave do Gemini do Lucivandro
+- Ajustes:
+  - conclusão: fontes longas usam até 2 linhas e terminam em "…" (antes eram cortadas sem aviso)
 
 ## F6 — Perfil, ideias, histórico · `prompts/fase-06-perfil-ideias-historico.md`
 - [x] ProfileForm (logo redimensionado, cores, fonte, @, contraste)
@@ -105,9 +106,9 @@ Base: `docs/Avaliacao_Design_PautaPronta preenchida.pdf` e `docs/Exemplodeartigo
       fundo, reordenar slides, negrito com **, público/tom/formato visual na tela Gerar
 - [x] Onda 3 — composições "número em destaque" e "passos numerados" (a IA escolhe), busca sem acento e reuso no banco
       de ideias e no histórico, campos de 16 px no celular
-- [ ] Testar os 5 temas dele com a chave nova do Gemini (agentes de IA, primeiro projeto de IA, automação × IA,
-      qualidade dos dados, gêmeos digitais)
-- [ ] Logo oficial e @ do rodapé (enviados por ele, entram em Configurações)
+- [x] 5 temas dele testados pelo modo assistido (ver Marco M2); falta repetir no modo online com a chave do Gemini
+- [x] Logo oficial HOTMILK + PUCPR confirmado e definido como padrão (`frontend/public/brand/`)
+- [ ] @ do rodapé (depende da conta onde ele vai publicar)
 - [ ] **Validação humana**
 
 ## F8 — Deploy e entrega · `prompts/fase-08-deploy-entrega.md`
