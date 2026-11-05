@@ -3,12 +3,29 @@ import { buildAssistedPrompt, buildFixPrompt } from '../../../shared/prompt.js';
 import { extractJson } from '../../../shared/json.js';
 import { normalizeContent, validateContent } from '../../../shared/schema.js';
 import { copyText } from '../canvas/exporters.js';
+import exampleResponse from '../../../shared/fixtures/exemplo.json';
+
+const EXAMPLE_TEXT = '```json\n' + JSON.stringify(exampleResponse, null, 2) + '\n```';
+
+// Mensagem simples para quem colou a resposta: o que aconteceu e o que pedir ao assistente.
+function friendlyParseError(message) {
+  if (/Não encontrei/.test(message)) {
+    return 'Não encontrei o bloco de código na resposta. Peça ao assistente: "Responda só com o bloco de código JSON, sem texto antes ou depois."';
+  }
+  if (/mal formado/.test(message)) {
+    return 'A resposta veio cortada ou com um erro de formatação. Peça ao assistente para enviar o JSON completo de novo.';
+  }
+  return message;
+}
 
 export default function AssistedPanel({
   theme = '',
   slideCount = 5,
-  tone = 'profissional-didatico',
+  tone,
+  audience,
+  visualFormat,
   feedUrls = [],
+  sites = [],
   onSuccess,
   onBack,
 }) {
@@ -23,9 +40,12 @@ export default function AssistedPanel({
       theme: theme || 'Tema do carrossel',
       slideCount,
       tone,
+      audience,
+      visualFormat,
       feedUrls,
+      sites,
     });
-  }, [theme, slideCount, tone, feedUrls]);
+  }, [theme, slideCount, tone, audience, visualFormat, feedUrls, sites]);
 
   // 'ok' | 'erro' | null — o aviso só diz "copiado" quando a cópia funcionou de verdade.
   const flash = (setter, result) => {
@@ -71,7 +91,7 @@ export default function AssistedPanel({
       // Válido: repassa para o handler de sucesso
       onSuccess?.(finalContent);
     } catch (err) {
-      setValidationErrors([err.message || 'Erro ao processar o JSON da resposta.']);
+      setValidationErrors([friendlyParseError(err.message || 'Erro ao processar a resposta.')]);
     }
   };
 
@@ -79,16 +99,16 @@ export default function AssistedPanel({
     <div className="assisted-panel-card">
       <div className="assisted-panel-header">
         <div className="assisted-title-row">
-          <h3>Modo Assistido (100% no navegador e gratuito)</h3>
+          <h3>Modo assistido (gratuito, direto no navegador)</h3>
           {onBack && (
             <button type="button" className="btn-secondary" onClick={onBack}>
-              ← Voltar ao Gerador Direto
+              ← Voltar
             </button>
           )}
         </div>
         <p className="assisted-description">
-          Use este modo quando a cota gratuita da API esgotar ou se preferir usar interfaces gratuitas como
-          Google Gemini, ChatGPT ou Claude sem gastar requisições.
+          Use quando a cota gratuita da ferramenta acabar, ou se preferir usar o seu assistente de IA:
+          ChatGPT, Microsoft Copilot ou outro.
         </p>
       </div>
 
@@ -97,10 +117,11 @@ export default function AssistedPanel({
         <div className="assisted-step-card">
           <div className="assisted-step-header">
             <span className="step-number">Passo 1</span>
-            <h4>Copie o prompt estruturado</h4>
+            <h4>Copie as instruções</h4>
           </div>
           <p className="step-hint">
-            Cole em <strong>gemini.google.com</strong>, <strong>chatgpt.com</strong> ou outro assistente gratuito.
+            Cole no <strong>ChatGPT</strong> (chatgpt.com) ou no <strong>Microsoft Copilot</strong>{' '}
+            (copilot.microsoft.com) e envie.
           </p>
           <textarea
             readOnly
@@ -127,8 +148,12 @@ export default function AssistedPanel({
             <h4>Cole a resposta da IA</h4>
           </div>
           <p className="step-hint">
-            Copie a resposta completa que o assistente gerou e cole aqui embaixo:
+            O assistente responde com um bloco de código. Copie a resposta inteira e cole aqui:
           </p>
+          <details className="assisted-example">
+            <summary>Ver exemplo de resposta esperada</summary>
+            <pre>{EXAMPLE_TEXT}</pre>
+          </details>
           <textarea
             value={pastedText}
             onChange={(e) => {
@@ -147,7 +172,7 @@ export default function AssistedPanel({
               onClick={handleApplyResponse}
               disabled={!pastedText.trim()}
             >
-              Usar resposta e abrir Revisão
+              Usar resposta
             </button>
           </div>
         </div>
@@ -157,7 +182,7 @@ export default function AssistedPanel({
       {validationErrors.length > 0 && (
         <div className="assisted-errors-card" role="alert">
           <div className="assisted-errors-header">
-            <strong>A resposta da IA precisa de correções:</strong>
+            <strong>O que corrigir na resposta:</strong>
             <button
               type="button"
               className="btn-copy-fix"
@@ -172,7 +197,7 @@ export default function AssistedPanel({
             ))}
           </ul>
           <p className="fix-instructions-hint">
-            Clique no botão acima para copiar uma mensagem pronta de correção e cole-a no chat do assistente. Em seguida, cole a nova resposta aqui.
+            Copie o pedido de correção, cole na mesma conversa do assistente e traga a nova resposta para cá.
           </p>
         </div>
       )}

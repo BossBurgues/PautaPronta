@@ -1,0 +1,24 @@
+{
+  "topic": "Diferenças entre automação e inteligência artificial",
+  "slides": [
+    { "n": 1, "role": "capa", "title": "Automação ou inteligência artificial?", "body": "Entenda a diferença, quando usar cada uma e por que muitos produtos são vendidos como IA sem ser." },
+    { "n": 2, "role": "contexto", "layout": "texto", "title": "Automação segue regras", "body": "A **automação robótica de processos (RPA)** usa software baseado em regras para tarefas repetitivas, como extrair dados, preencher formulários e mover arquivos [1].", "source": "Fonte: IBM, What is RPA? [1]" },
+    { "n": 3, "role": "ponto", "layout": "texto", "title": "A IA infere a partir de dados", "body": "Pela OCDE, um sistema de IA **infere**, a partir do que recebe, como gerar previsões, conteúdos, recomendações ou decisões [2]. A RPA é guiada por processos; a IA, por dados [1].", "source": "Fontes: OCDE, 2023 [2]; IBM [1]" },
+    { "n": 4, "role": "ponto", "layout": "destaque", "stat": "~130", "title": "Cuidado com o \"agent washing\"", "body": "é a estimativa do Gartner de fornecedores de IA agêntica **de fato**, entre milhares. Muitos só renomeiam RPA, chatbots e assistentes [3].", "source": "Fonte: Gartner, junho de 2025 [3]" },
+    { "n": 5, "role": "ponto", "layout": "passos", "title": "Quando usar cada uma", "body": "A sugestão do Gartner [3]:", "steps": [
+      { "label": "Automação", "text": "Fluxos de trabalho de **rotina**." },
+      { "label": "Assistente de IA", "text": "Consultas e buscas simples." },
+      { "label": "Agente de IA", "text": "Processos que exigem decisões." }
+    ], "source": "Fonte: Gartner, junho de 2025 [3]" },
+    { "n": 6, "role": "conclusao", "title": "Combinar é o caminho", "body": "A **automação inteligente** junta RPA e IA para casos mais complexos [1]. O ponto de partida é entender o processo antes de escolher a ferramenta." }
+  ],
+  "caption_linkedin": "Automação e inteligência artificial não são sinônimos. A IBM resume a diferença: a RPA é guiada por processos e segue regras definidas, enquanto a IA é guiada por dados. A definição da OCDE vai na mesma linha: um sistema de IA infere, a partir do que recebe, como gerar previsões, conteúdos, recomendações ou decisões. A distinção importa na hora de comprar: o Gartner estima que só cerca de 130 dos milhares de fornecedores de IA agêntica são de fato agênticos, e chama de 'agent washing' a prática de renomear RPA e chatbots. Informações verificadas em 5 de novembro de 2026.",
+  "caption_instagram": "Automação segue regras; IA aprende com dados. Veja quando usar cada uma e como não cair no 'agent washing'.",
+  "hashtags": ["#Automacao", "#InteligenciaArtificial", "#RPA", "#TransformacaoDigital"],
+  "cta": "Na sua empresa, o que já é automação e o que precisa de IA?",
+  "sources": [
+    { "title": "IBM — What is Robotic Process Automation (RPA)?", "url": "https://www.ibm.com/think/topics/rpa" },
+    { "title": "OECD.AI — Updates to the OECD's definition of an AI system", "url": "https://oecd.ai/en/wonk/ai-system-definition-update" },
+    { "title": "Gartner — Over 40% of agentic AI projects will be canceled by end of 2027", "url": "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027" }
+  ]
+}

@@ -9,9 +9,59 @@ export const LIMITS = {
   captionLinkedinMax: 3000,
   captionInstagramMax: 2200,
   ctaMax: 150,
+  statMax: 12,
+  stepsMin: 2,
+  stepsMax: 4,
+  stepLabelMax: 32,
+  stepTextMax: 90,
+  sourceLineMax: 120,
 };
 
 export const ROLES = ['capa', 'contexto', 'ponto', 'conclusao'];
+
+// Composições do slide. As três primeiras a IA pode escolher; as de imagem só o usuário,
+// porque a ferramenta não gera imagens (ele insere a imagem na Revisão).
+export const AI_LAYOUTS = ['texto', 'destaque', 'passos'];
+export const LAYOUTS = [...AI_LAYOUTS, 'imagem-topo', 'imagem-lado', 'imagem-fundo'];
+export const THEMES = ['auto', 'claro', 'escuro'];
+// Visual do carrossel inteiro: padrão (capa e conclusão escuras), todo escuro ou todo claro;
+// e a cor dos destaques (a do perfil, a principal ou a secundária).
+export const CAROUSEL_THEMES = ['padrao', 'escuro', 'claro'];
+export const CAROUSEL_HIGHLIGHTS = ['perfil', 'accent', 'accent2'];
+
+// Negrito no texto do slide: **palavra**. Os marcadores não contam no limite de caracteres.
+export function stripMarks(text) {
+  return String(text || '').replace(/\*\*/g, '');
+}
+
+const clamp = (value, min, max, fallback) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
+};
+
+function normalizeImage(raw) {
+  if (!raw || typeof raw !== 'object' || typeof raw.src !== 'string') return undefined;
+  if (!/^data:image\/(png|jpeg|webp);base64,/i.test(raw.src)) return undefined;
+  return {
+    src: raw.src,
+    focusX: clamp(raw.focusX, 0, 100, 50),
+    focusY: clamp(raw.focusY, 0, 100, 50),
+    zoom: clamp(raw.zoom, 1, 3, 1),
+  };
+}
+
+function normalizeSteps(raw) {
+  if (!Array.isArray(raw)) return undefined;
+  const steps = raw
+    .filter((s) => s && typeof s === 'object')
+    .map((s) => ({
+      label: typeof s.label === 'string' ? s.label.trim() : '',
+      text: typeof s.text === 'string' ? s.text.trim() : '',
+    }))
+    .filter((s) => s.label || s.text)
+    .slice(0, LIMITS.stepsMax);
+  return steps.length ? steps : undefined;
+}
 
 // Formato aceito pelo campo generationConfig.responseSchema do Gemini (subconjunto de OpenAPI).
 export const GEMINI_RESPONSE_SCHEMA = {
@@ -29,6 +79,17 @@ export const GEMINI_RESPONSE_SCHEMA = {
           role: { type: 'STRING', enum: ['capa', 'contexto', 'ponto', 'conclusao'] },
           title: { type: 'STRING' },
           body: { type: 'STRING' },
+          layout: { type: 'STRING', enum: ['texto', 'destaque', 'passos'] },
+          stat: { type: 'STRING' },
+          steps: {
+            type: 'ARRAY',
+            items: {
+              type: 'OBJECT',
+              properties: { label: { type: 'STRING' }, text: { type: 'STRING' } },
+              required: ['label', 'text'],
+            },
+          },
+          source: { type: 'STRING' },
         },
         required: ['n', 'role', 'title', 'body'],
       },
@@ -88,12 +149,17 @@ export function normalizeContent(raw) {
       }
     }
 
-    return {
-      n: index + 1,
-      role,
-      title,
-      body,
-    };
+    const normalized = { n: index + 1, role, title, body };
+    // Campos opcionais: só entram quando válidos, para o JSON continuar enxuto.
+    if (LAYOUTS.includes(s.layout)) normalized.layout = s.layout;
+    if (THEMES.includes(s.theme) && s.theme !== 'auto') normalized.theme = s.theme;
+    if (typeof s.stat === 'string' && s.stat.trim()) normalized.stat = s.stat.trim();
+    if (typeof s.source === 'string' && s.source.trim()) normalized.source = s.source.trim();
+    const steps = normalizeSteps(s.steps);
+    if (steps) normalized.steps = steps;
+    const image = normalizeImage(s.image);
+    if (image) normalized.image = image;
+    return normalized;
   });
 
   // Normalização de hashtags
@@ -143,7 +209,7 @@ export function normalizeContent(raw) {
     }
   }
 
-  return {
+  const normalized = {
     topic,
     slides,
     caption_linkedin,
@@ -152,6 +218,12 @@ export function normalizeContent(raw) {
     cta,
     sources,
   };
+  // Visual deste carrossel (opcional): só entra quando difere do padrão das Configurações.
+  const style = {};
+  if (CAROUSEL_THEMES.includes(data.style?.theme) && data.style.theme !== 'padrao') style.theme = data.style.theme;
+  if (CAROUSEL_HIGHLIGHTS.includes(data.style?.highlight) && data.style.highlight !== 'perfil') style.highlight = data.style.highlight;
+  if (Object.keys(style).length) normalized.style = style;
+  return normalized;
 }
 
 /**
@@ -193,16 +265,41 @@ export function validateContent(content) {
       errors.push(`Slide ${num}: corpo não pode ser vazio.`);
     }
 
-    // Avisos de tamanho do slide
-    if (slide.title && slide.title.length > LIMITS.titleMax) {
+    // Avisos de tamanho do slide (sem contar os marcadores ** de negrito)
+    const titleLen = stripMarks(slide.title).length;
+    const bodyLen = stripMarks(slide.body).length;
+    if (titleLen > LIMITS.titleMax) {
       warnings.push(
-        `Slide ${num}: título com ${slide.title.length} caracteres (máximo ${LIMITS.titleMax}).`,
+        `Slide ${num}: título com ${titleLen} caracteres (máximo ${LIMITS.titleMax}). Resuma para caber bem no slide.`,
       );
     }
-    if (slide.body && slide.body.length > LIMITS.bodyMax) {
+    if (bodyLen > LIMITS.bodyMax) {
       warnings.push(
-        `Slide ${num}: corpo com ${slide.body.length} caracteres (máximo ${LIMITS.bodyMax}).`,
+        `Slide ${num}: texto com ${bodyLen} caracteres (máximo ${LIMITS.bodyMax}). Resuma para caber bem no slide.`,
       );
+    }
+    if (slide.layout === 'destaque') {
+      if (!slide.stat) warnings.push(`Slide ${num}: informe o número em destaque (ex.: 40%).`);
+      else if (slide.stat.length > LIMITS.statMax) {
+        warnings.push(`Slide ${num}: número em destaque com mais de ${LIMITS.statMax} caracteres.`);
+      }
+    }
+    if (slide.layout === 'passos') {
+      const steps = Array.isArray(slide.steps) ? slide.steps : [];
+      if (steps.length < LIMITS.stepsMin) {
+        warnings.push(`Slide ${num}: inclua de ${LIMITS.stepsMin} a ${LIMITS.stepsMax} passos.`);
+      }
+      steps.forEach((step, i) => {
+        if (stripMarks(step.text).length > LIMITS.stepTextMax) {
+          warnings.push(`Slide ${num}, passo ${i + 1}: texto com mais de ${LIMITS.stepTextMax} caracteres.`);
+        }
+        if ((step.label || '').length > LIMITS.stepLabelMax) {
+          warnings.push(`Slide ${num}, passo ${i + 1}: rótulo com mais de ${LIMITS.stepLabelMax} caracteres.`);
+        }
+      });
+    }
+    if (slide.source && slide.source.length > LIMITS.sourceLineMax) {
+      warnings.push(`Slide ${num}: linha de fonte com mais de ${LIMITS.sourceLineMax} caracteres.`);
     }
   });
 

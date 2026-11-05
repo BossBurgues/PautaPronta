@@ -27,7 +27,7 @@ export default function AccessForm({ config, onUpdateAccess }) {
       if (res.ok) {
         setTestResult({
           type: 'success',
-          message: `Conexão bem-sucedida com a API! (${res.service || 'ok'})`,
+          message: "Conexão funcionando.",
         });
       } else {
         setTestResult({
@@ -48,17 +48,17 @@ export default function AccessForm({ config, onUpdateAccess }) {
   return (
     <div className="access-form-card">
       <div className="access-form-header">
-        <h3>Acesso ao Worker (API)</h3>
+        <h3>Acesso à ferramenta</h3>
         <p className="access-form-description">
-          Configure o endereço do Cloudflare Worker e o token de acesso para gerar carrosséis diretamente.
+          Endereço da ferramenta e token de acesso, para gerar carrosséis direto pelo app. Quem instalou a ferramenta passa esses dados.
         </p>
       </div>
 
       <div className="access-form-body">
         <div className="form-group">
           <label htmlFor="access-api-url" className="form-label-row">
-            <span>URL da API</span>
-            <span className="form-hint">Padrão local: http://localhost:8787</span>
+            <span>Endereço da ferramenta</span>
+            <span className="form-hint">Termina em .workers.dev</span>
           </label>
           <input
             id="access-api-url"
@@ -73,7 +73,7 @@ export default function AccessForm({ config, onUpdateAccess }) {
         <div className="form-group">
           <label htmlFor="access-token" className="form-label-row">
             <span>Token de acesso</span>
-            <span className="form-hint">Definido em ACCESS_TOKEN no Worker</span>
+            <span className="form-hint">Fornecido por quem instalou a ferramenta</span>
           </label>
           <div className="token-input-wrapper">
             <input
@@ -81,7 +81,7 @@ export default function AccessForm({ config, onUpdateAccess }) {
               type={showToken ? 'text' : 'password'}
               value={token}
               onChange={handleTokenChange}
-              placeholder="Cole seu ACCESS_TOKEN"
+              placeholder="Cole o token de acesso"
               className="input-text"
               autoComplete="off"
             />

@@ -15,10 +15,10 @@ import DataBackup from './components/DataBackup.jsx';
 
 const TABS = [
   { id: 'gerar', label: 'Gerar' },
-  { id: 'revisao', label: 'Revisão' },
+  { id: 'revisao', label: 'Revisar' },
   { id: 'ideias', label: 'Ideias' },
   { id: 'historico', label: 'Histórico' },
-  { id: 'config', label: 'Config' },
+  { id: 'config', label: 'Configurações' },
 ];
 
 export default function App() {
@@ -28,6 +28,7 @@ export default function App() {
     updateProfile,
     resetProfile,
     updateFeeds,
+    updateReferenceSites,
     updateDefaults,
   } = useConfig();
 
@@ -49,6 +50,8 @@ export default function App() {
     updateField,
     addSlide,
     removeSlide,
+    moveSlide,
+    saveFailed,
   } = useDraft();
 
   const profile = config.profile;
@@ -143,6 +146,8 @@ export default function App() {
             updateField={updateField}
             addSlide={addSlide}
             removeSlide={removeSlide}
+            moveSlide={moveSlide}
+            saveFailed={saveFailed}
             profile={profile}
             logoImg={logoImg}
             usedSources={usedSources}
@@ -167,6 +172,7 @@ export default function App() {
             onOpenInReview={handleOpenHistoryInReview}
             onRemoveHistory={removeHistory}
             onClearHistory={clearHistory}
+            onSaveAsIdea={(entry) => addIdea({ theme: entry.theme, notes: 'Pauta reaproveitada do histórico', links: (entry.content?.sources || []).map((s) => s.url) })}
           />
         )}
 
@@ -180,6 +186,8 @@ export default function App() {
             />
             <FeedsForm
               feeds={config.feeds}
+              referenceSites={config.referenceSites}
+              onUpdateReferenceSites={updateReferenceSites}
               defaults={config.defaults}
               onUpdateFeeds={updateFeeds}
               onUpdateDefaults={updateDefaults}

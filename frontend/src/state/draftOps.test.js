@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { patchSlide, setField, insertSlide, deleteSlide } from './draftOps.js';
+import { patchSlide, setField, insertSlide, deleteSlide, moveSlide, applyVisualFormat } from './draftOps.js';
 import fixture from '../../../shared/fixtures/exemplo.json';
 
 describe('draftOps', () => {
@@ -46,5 +46,40 @@ describe('draftOps', () => {
     patchSlide(fixture, 0, { title: 'x' });
     insertSlide(fixture);
     expect(JSON.stringify(fixture)).toBe(before);
+  });
+});
+
+describe('moveSlide', () => {
+  it('troca o slide de posição e renumera', () => {
+    const next = moveSlide(fixture, 2, 1);
+    expect(next.slides[3].title).toBe(fixture.slides[2].title);
+    expect(next.slides[2].title).toBe(fixture.slides[3].title);
+    expect(next.slides.map((s) => s.n)).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('ignora movimento para fora da lista', () => {
+    expect(moveSlide(fixture, 0, -1)).toBe(fixture);
+    expect(moveSlide(fixture, 4, 1)).toBe(fixture);
+  });
+});
+
+describe('applyVisualFormat', () => {
+  it('texto + imagem: capa com imagem de fundo, meio alternando, conclusão e infográficos intactos', () => {
+    const raw = {
+      slides: [
+        { role: 'capa' },
+        { role: 'contexto' },
+        { role: 'ponto', layout: 'texto' },
+        { role: 'ponto', layout: 'passos' },
+        { role: 'ponto' },
+        { role: 'conclusao' },
+      ],
+    };
+    const next = applyVisualFormat(raw, 'texto-imagem');
+    expect(next.slides.map((s) => s.layout)).toEqual(['imagem-fundo', 'imagem-topo', 'imagem-lado', 'passos', 'imagem-topo', undefined]);
+  });
+
+  it('outros formatos não mudam nada', () => {
+    expect(applyVisualFormat(fixture, 'texto')).toBe(fixture);
   });
 });

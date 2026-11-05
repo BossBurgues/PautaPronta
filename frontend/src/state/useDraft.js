@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { normalizeContent } from '../../../shared/schema.js';
 import { load, save } from './storage.js';
-import { patchSlide, setField, insertSlide, deleteSlide } from './draftOps.js';
+import { patchSlide, setField, insertSlide, deleteSlide, moveSlide } from './draftOps.js';
 
 const DRAFT_KEY = 'draft';
 
@@ -15,6 +15,8 @@ export function useDraft() {
   });
 
   const saveTimerRef = useRef(null);
+  // Imagens deixam o rascunho pesado: se o navegador não tiver espaço, a Revisão avisa.
+  const [saveFailed, setSaveFailed] = useState(false);
 
   useEffect(() => {
     if (saveTimerRef.current) {
@@ -22,7 +24,7 @@ export function useDraft() {
     }
     saveTimerRef.current = setTimeout(() => {
       if (content) {
-        save(DRAFT_KEY, content);
+        setSaveFailed(!save(DRAFT_KEY, content));
       }
     }, 500);
 
@@ -55,6 +57,10 @@ export function useDraft() {
     setContentState((prev) => insertSlide(prev));
   }, []);
 
+  const moveSlideBy = useCallback((index, delta) => {
+    setContentState((prev) => moveSlide(prev, index, delta));
+  }, []);
+
   const removeSlide = useCallback((index) => {
     setContentState((prev) => deleteSlide(prev, index));
   }, []);
@@ -66,5 +72,7 @@ export function useDraft() {
     updateField,
     addSlide,
     removeSlide,
+    moveSlide: moveSlideBy,
+    saveFailed,
   };
 }

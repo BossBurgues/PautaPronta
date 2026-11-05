@@ -91,7 +91,10 @@ export async function generateCarousel({
   theme,
   slideCount,
   tone,
+  audience,
+  visualFormat,
   items,
+  sites,
   useWebSearch,
 }) {
   const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
@@ -101,7 +104,10 @@ export async function generateCarousel({
     theme,
     slideCount,
     tone,
+    audience,
+    visualFormat,
     items,
+    sites,
     useWebSearch,
   });
 

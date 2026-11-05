@@ -1,0 +1,23 @@
+{
+  "topic": "Agentes de IA nas empresas",
+  "slides": [
+    { "n": 1, "role": "capa", "title": "Agentes de IA nas empresas: avanço com limites", "body": "O que muda quando a IA passa a executar tarefas, onde as empresas estão e como começar com foco em valor." },
+    { "n": 2, "role": "contexto", "layout": "texto", "title": "Do assistente ao agente", "body": "**Agentes de IA** vão além de assistentes virtuais e de robôs de automação com roteiro fixo: podem executar tarefas complexas em fluxos de trabalho [2].", "source": "Fonte: Gartner, junho de 2025 [2]" },
+    { "n": 3, "role": "ponto", "layout": "destaque", "stat": "40%", "title": "Grandes empresas aceleram", "body": "dos respondentes de empresas com receita acima de US$ 1 bilhão relatam **escalar agentes de IA**, ante 27% no ano anterior. Levantamentos anuais; os grupos podem variar [1].", "source": "Fonte: McKinsey, The state of AI in 2026 [1]" },
+    { "n": 4, "role": "ponto", "layout": "texto", "title": "Nem todo projeto vai sobreviver", "body": "O Gartner prevê que **mais de 40%** dos projetos de IA agêntica serão cancelados até o fim de 2027, por custos crescentes, valor pouco claro ou controles de risco insuficientes [2].", "source": "Fonte: Gartner, junho de 2025 [2]" },
+    { "n": 5, "role": "ponto", "layout": "passos", "title": "Agente, automação ou assistente?", "body": "Como o Gartner sugere escolher a ferramenta [2]:", "steps": [
+      { "label": "Agente de IA", "text": "Quando o processo exige **decisões**." },
+      { "label": "Automação", "text": "Para fluxos de trabalho de rotina." },
+      { "label": "Assistente", "text": "Para consultas e buscas simples." }
+    ], "source": "Fonte: Gartner, junho de 2025 [2]" },
+    { "n": 6, "role": "conclusao", "title": "Comece pelo valor, não pela moda", "body": "Use agentes onde há **retorno claro** [2] e redesenhe o fluxo de trabalho, como fazem as empresas de melhor desempenho, em vez de só encaixar a IA no processo atual [1]." }
+  ],
+  "caption_linkedin": "Agentes de IA deixaram de ser só promessa: segundo a pesquisa global da McKinsey de 2026, 40% dos respondentes de grandes empresas já relatam escalar agentes, ante 27% no ano anterior. Ao mesmo tempo, o Gartner prevê que mais de 40% dos projetos de IA agêntica serão cancelados até 2027, por custo, valor pouco claro ou falta de controles de risco. O caminho que as duas fontes apontam é o mesmo: escolher bem onde usar agentes, medir o retorno e redesenhar o fluxo de trabalho, em vez de só acrescentar a tecnologia ao processo atual. Informações verificadas em 5 de novembro de 2026.",
+  "caption_instagram": "Agentes de IA: o que são, onde as empresas estão e quando vale a pena usar. Salva pra consultar antes do próximo projeto.",
+  "hashtags": ["#AgentesDeIA", "#InteligenciaArtificial", "#GovernancaDeIA", "#Inovacao"],
+  "cta": "Em qual processo da sua empresa um agente de IA faria diferença hoje?",
+  "sources": [
+    { "title": "McKinsey — The state of AI in 2026: On the road to ROI", "url": "https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai" },
+    { "title": "Gartner — Over 40% of agentic AI projects will be canceled by end of 2027", "url": "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027" }
+  ]
+}
