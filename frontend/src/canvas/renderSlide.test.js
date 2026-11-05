@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { wrapText, fitText, tokenizeRich, wrapRich, fitRich, getRenderSlides, slideTheme, mix, clampLines } from './renderSlide.js';
+import { wrapText, fitText, tokenizeRich, wrapRich, fitRich, getRenderSlides, slideTheme, mix, clampLines, resolveHandle, ensureContrast, contrast, paletteFor } from './renderSlide.js';
 
 describe('canvas/renderSlide', () => {
   const measure = (s) => s.length * 10;
@@ -116,5 +116,37 @@ describe('clampLines', () => {
     expect(lines).toHaveLength(2);
     expect(lines[1].endsWith('…')).toBe(true);
     expect(lines.join(' ').length).toBeLessThan(80);
+  });
+});
+
+describe('@ por rede, contraste e visual do carrossel', () => {
+  it('resolveHandle usa o @ da rede de destino, com recuo para os outros', () => {
+    const p = { handleLinkedin: '@li', handleInstagram: '@ig' };
+    expect(resolveHandle(p, 'linkedin')).toBe('@li');
+    expect(resolveHandle(p, 'instagram')).toBe('@ig');
+    expect(resolveHandle({ handleInstagram: '@ig' }, 'linkedin')).toBe('@ig');
+    expect(resolveHandle({ handle: '@antigo' }, 'instagram')).toBe('@antigo');
+    expect(resolveHandle({}, 'linkedin')).toBe('');
+  });
+
+  it('ensureContrast clareia o vinho no fundo grafite até ficar legível', () => {
+    const c = ensureContrast('#A20136', '#1E1E1E', 4.5);
+    expect(contrast(c, '#1E1E1E')).toBeGreaterThanOrEqual(4.5);
+    expect(ensureContrast('#FFFFFF', '#1E1E1E', 4.5)).toBe('#ffffff');
+  });
+
+  it('cor secundária vale também nos slides escuros, legível, e a caixa usa a cor original', () => {
+    const profile = { highlight: 'accent2', colors: { bg: '#F0F0F0', text: '#1E1E1E', accent: '#FF024B', accent2: '#A20136' } };
+    const dark = paletteFor(profile, 'escuro');
+    expect(dark.hlFill).toBe('#A20136');
+    expect(contrast(dark.hl, dark.bg)).toBeGreaterThanOrEqual(4.5);
+    expect(paletteFor(profile, 'escuro', { highlight: 'accent' }).hlFill).toBe('#FF024B');
+  });
+
+  it('visual do carrossel: todo escuro ou todo claro, mas a escolha do slide prevalece', () => {
+    expect(slideTheme({ role: 'ponto' }, 'slide', { theme: 'escuro' })).toBe('escuro');
+    expect(slideTheme({ role: 'capa' }, 'slide', { theme: 'claro' })).toBe('claro');
+    expect(slideTheme({ role: 'capa', theme: 'escuro' }, 'slide', { theme: 'claro' })).toBe('escuro');
+    expect(slideTheme({ role: 'capa' }, 'slide', { theme: 'padrao' })).toBe('escuro');
   });
 });

@@ -115,7 +115,8 @@ export function useConfig() {
         ...DEFAULT_PROFILE,
         colors: { ...DEFAULT_PROFILE.colors },
         logoDataUrl: prev.profile.logoDataUrl,
-        handle: prev.profile.handle,
+        handleLinkedin: prev.profile.handleLinkedin,
+        handleInstagram: prev.profile.handleInstagram,
       },
     };
     const ok = save(CONFIG_KEY, next);

@@ -177,10 +177,24 @@ export function fitRich({ text, maxWidth, maxHeight, maxSize, minSize, lineHeigh
 // ---------------------------------------------------------------------------
 
 export function resolveFonts(profile) {
+  const light = profile?.titleWeight === 'light';
   return {
     title: profile?.titleFont || profile?.fontFamily || 'Saira',
     body: profile?.bodyFont || profile?.fontFamily || 'Open Sans',
+    // "Fino" segue o site da HOTMILK: Saira 300 em maiúsculas, palavra-chave em negrito itálico.
+    titleWeight: light ? 300 : 700,
+    titleBoldStyle: light ? 'italic' : 'normal',
   };
+}
+
+/** @ do rodapé conforme a rede de destino (PDF → LinkedIn, PNG → Instagram); sem rede, o primeiro preenchido. */
+export function resolveHandle(profile, network) {
+  const li = profile?.handleLinkedin?.trim();
+  const ig = profile?.handleInstagram?.trim();
+  const base = profile?.handle?.trim();
+  if (network === 'linkedin') return li || base || ig || '';
+  if (network === 'instagram') return ig || base || li || '';
+  return li || ig || base || '';
 }
 
 /** Garante que as fontes do perfil estejam carregadas antes do desenho (senão sai com a fonte errada). */
@@ -193,6 +207,7 @@ export async function ensureFonts(profileOrFamily) {
   try {
     await Promise.all([
       document.fonts.load(`700 64px "${fonts.title}"`),
+      document.fonts.load(`300 64px "${fonts.title}"`),
       document.fonts.load(`600 64px "${fonts.title}"`),
       document.fonts.load(`400 40px "${fonts.body}"`),
       document.fonts.load(`700 40px "${fonts.body}"`),
@@ -257,25 +272,56 @@ export function mix(a, b, t) {
   return `#${ca.map((v, i) => Math.round(v + (cb[i] - v) * t).toString(16).padStart(2, '0')).join('')}`;
 }
 
-/** Tema do slide: escolhido no slide, ou automático (capa e conclusão escuras). */
-export function slideTheme(slide, kind = 'slide') {
-  if (kind === 'fontes') return 'claro';
+function luminance(hex) {
+  return hexToRgb(hex)
+    .map((v) => v / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+    .reduce((acc, v, i) => acc + v * [0.2126, 0.7152, 0.0722][i], 0);
+}
+
+export function contrast(a, b) {
+  const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p);
+  return (x + 0.05) / (y + 0.05);
+}
+
+/** Clareia (fundo escuro) ou escurece (fundo claro) a cor até ter o contraste mínimo com o fundo. */
+export function ensureContrast(color, bg, min) {
+  const target = luminance(bg) < 0.5 ? '#FFFFFF' : '#000000';
+  for (let i = 0; i <= 20; i++) {
+    const c = mix(color, target, i / 20);
+    if (contrast(c, bg) >= min) return c;
+  }
+  return target;
+}
+
+/**
+ * Tema do slide. Ordem: escolha do slide → imagem de fundo (sempre escuro) → visual do carrossel
+ * (todo escuro / todo claro) → padrão (capa e conclusão escuras, meio claro).
+ */
+export function slideTheme(slide, kind = 'slide', style = null) {
+  if (kind === 'fontes') return style?.theme === 'escuro' ? 'escuro' : 'claro';
   if (slide?.layout === 'imagem-fundo') return 'escuro';
   if (slide?.theme === 'claro' || slide?.theme === 'escuro') return slide.theme;
+  if (style?.theme === 'claro' || style?.theme === 'escuro') return style.theme;
   return slide?.role === 'capa' || slide?.role === 'conclusao' ? 'escuro' : 'claro';
 }
 
-export function paletteFor(profile, theme) {
+export function paletteFor(profile, theme, style = null) {
   const c = profile?.colors || {};
   const light = c.bg || '#F0F0F0';
   const ink = c.text || '#1E1E1E';
   const accent = c.accent || '#FF024B';
   const accent2 = c.accent2 || c.muted || '#A20136';
+  // Cor dos destaques: a do carrossel (se escolhida) ou a do perfil.
+  const key = style?.highlight && style.highlight !== 'perfil' ? style.highlight : profile?.highlight;
+  const base = key === 'accent2' ? accent2 : accent;
+  const bg = theme === 'escuro' ? ink : light;
+  // hl = cor do texto em destaque, ajustada para ler bem no fundo; hlFill = cor original, para a caixa da pergunta.
+  const hl = ensureContrast(base, bg, theme === 'escuro' ? 4.5 : 3);
   if (theme === 'escuro') {
-    return { bg: ink, fg: light, muted: mix(light, ink, 0.38), hl: accent, soft: mix(ink, accent, 0.18), line: mix(ink, light, 0.18) };
+    return { bg, fg: light, muted: mix(light, ink, 0.38), hl, hlFill: base, soft: mix(ink, base, 0.18), line: mix(ink, light, 0.18) };
   }
-  const hl = profile?.highlight === 'accent2' ? accent2 : accent;
-  return { bg: light, fg: ink, muted: mix(ink, light, 0.42), hl, soft: mix(light, hl, 0.1), line: mix(light, ink, 0.14) };
+  return { bg, fg: ink, muted: mix(ink, light, 0.42), hl, hlFill: base, soft: mix(light, base, 0.1), line: mix(light, ink, 0.14) };
 }
 
 // ---------------------------------------------------------------------------
@@ -302,14 +348,14 @@ function roundRect(ctx, x, y, w, h, r) {
   else ctx.rect(x, y, w, h);
 }
 
-function drawRichLines(ctx, lines, x, y, { size, lineHeight, font, color, boldColor, boldWeight = 700, weight = 400 }) {
+function drawRichLines(ctx, lines, x, y, { size, lineHeight, font, color, boldColor, boldWeight = 700, weight = 400, boldStyle = 'normal' }) {
   ctx.textBaseline = 'top';
   ctx.textAlign = 'left';
   let cy = y;
   for (const line of lines) {
     let cx = x;
     for (const run of line) {
-      ctx.font = `${run.bold ? boldWeight : weight} ${size}px "${font}", sans-serif`;
+      ctx.font = `${run.bold ? `${boldStyle} ${boldWeight}` : weight} ${size}px "${font}", sans-serif`;
       ctx.fillStyle = run.bold ? boldColor : color;
       ctx.fillText(run.text, cx, cy);
       cx += ctx.measureText(run.text).width;
@@ -319,19 +365,19 @@ function drawRichLines(ctx, lines, x, y, { size, lineHeight, font, color, boldCo
   return cy;
 }
 
-function measurer(ctx, font, weight, boldWeight = 700) {
+function measurer(ctx, font, weight, boldWeight = 700, boldStyle = 'normal') {
   return (size) => (text, bold) => {
-    ctx.font = `${bold ? boldWeight : weight} ${size}px "${font}", sans-serif`;
+    ctx.font = `${bold ? `${boldStyle} ${boldWeight}` : weight} ${size}px "${font}", sans-serif`;
     return ctx.measureText(text).width;
   };
 }
 
 /** Bloco de texto rico: mede, ajusta e desenha. Retorna { bottom, overflow, height }. */
-function textBlock(ctx, text, { x, y, width, maxHeight, maxSize, minSize, lineHeight, font, weight, boldWeight, color, boldColor, measureOnly = false }) {
-  const fit = fitRich({ text, maxWidth: width, maxHeight, maxSize, minSize, lineHeight, measureAt: measurer(ctx, font, weight, boldWeight) });
+function textBlock(ctx, text, { x, y, width, maxHeight, maxSize, minSize, lineHeight, font, weight, boldWeight, boldStyle, color, boldColor, measureOnly = false }) {
+  const fit = fitRich({ text, maxWidth: width, maxHeight, maxSize, minSize, lineHeight, measureAt: measurer(ctx, font, weight, boldWeight, boldStyle) });
   const height = fit.lines.length * fit.size * lineHeight;
   if (!measureOnly) {
-    drawRichLines(ctx, fit.lines, x, y, { size: fit.size, lineHeight, font, color, boldColor, weight, boldWeight });
+    drawRichLines(ctx, fit.lines, x, y, { size: fit.size, lineHeight, font, color, boldColor, weight, boldWeight, boldStyle });
   }
   return { bottom: y + height, height, overflow: fit.overflow, size: fit.size };
 }
@@ -406,24 +452,39 @@ function drawHeader(ctx, { profile, pal, fonts, position, total }) {
   ctx.fillText(`${String(position).padStart(2, '0')} / ${String(total).padStart(2, '0')}`, SLIDE_W - M, 100);
 }
 
-function drawFooter(ctx, { profile, pal, fonts, theme, assets, big }) {
+function drawFooter(ctx, { profile, pal, fonts, theme, assets, big, network }) {
+  const handle = resolveHandle(profile, network);
   const logo = theme === 'escuro' ? assets?.logoLight || assets?.logo : assets?.logo;
   const maxH = big ? 104 : 60;
   const maxW = big ? 520 : 340;
   const centerY = SLIDE_H - (big ? 112 : 92);
+  let logoRight = M;
   if (logo) {
     const lw = logo.naturalWidth || logo.width;
     const lh = logo.naturalHeight || logo.height;
     const scale = Math.min(maxH / lh, maxW / lw);
     ctx.drawImage(logo, M, centerY - (lh * scale) / 2, lw * scale, lh * scale);
+    logoRight = M + lw * scale;
   }
-  if (profile?.handle) {
-    ctx.fillStyle = pal.muted;
-    ctx.font = `600 30px "${fonts.body}", sans-serif`;
-    ctx.textBaseline = 'middle';
+  if (handle) {
     // Com logo, o @ vai para a direita, alinhado ao centro do logo; sem logo, fica à esquerda.
+    // Um @ longo diminui até 22 px e, se ainda assim não couber, termina em "…": nunca encosta no logo.
+    const room = logo ? SLIDE_W - M - logoRight - 40 : SLIDE_W - M * 2;
+    let size = 30;
+    const setFont = () => {
+      ctx.font = `600 ${size}px "${fonts.body}", sans-serif`;
+    };
+    setFont();
+    while (size > 22 && ctx.measureText(handle).width > room) {
+      size -= 2;
+      setFont();
+    }
+    let text = handle;
+    while (text.length > 2 && ctx.measureText(text).width > room) text = `${text.slice(0, -2)}…`;
+    ctx.fillStyle = pal.muted;
+    ctx.textBaseline = 'middle';
     ctx.textAlign = logo ? 'right' : 'left';
-    ctx.fillText(profile.handle, logo ? SLIDE_W - M : M, centerY);
+    ctx.fillText(text, logo ? SLIDE_W - M : M, centerY);
     ctx.textBaseline = 'alphabetic';
   }
 }
@@ -452,7 +513,7 @@ function accentBar(ctx, x, y, pal) {
 // Layout "texto" (capa, contexto, ponto). Bloco centralizado na altura disponível: sem o vão vazio embaixo.
 function layoutTexto(ctx, { slide, profile, pal, fonts, area, isCapa }) {
   const width = area.w;
-  const title = { text: titleText(slide, profile), x: area.x, width, maxSize: isCapa ? 104 : 80, minSize: isCapa ? 64 : 54, lineHeight: 1.1, font: fonts.title, weight: 700, boldWeight: 700, color: pal.fg, boldColor: pal.hl };
+  const title = { text: titleText(slide, profile), x: area.x, width, maxSize: isCapa ? 104 : 80, minSize: isCapa ? 64 : 54, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl };
   const body = { text: slide?.body || '', x: area.x, width, maxSize: isCapa ? 44 : 48, minSize: 32, lineHeight: 1.42, font: fonts.body, weight: 400, boldWeight: 700, color: isCapa ? pal.muted : pal.fg, boldColor: isCapa ? pal.fg : pal.hl };
   const titleMax = area.h * (isCapa ? 0.5 : 0.42);
   const t = textBlock(ctx, title.text, { ...title, y: 0, maxHeight: titleMax, measureOnly: true });
@@ -470,7 +531,7 @@ function layoutTexto(ctx, { slide, profile, pal, fonts, area, isCapa }) {
 
 // Layout "destaque": número grande + explicação.
 function layoutDestaque(ctx, { slide, profile, pal, fonts, area }) {
-  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: area.y, width: area.w, maxHeight: 200, maxSize: 72, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: area.y, width: area.w, maxHeight: 200, maxSize: 72, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
   const statText = slide?.stat || '—';
   let size = 300;
   ctx.font = `700 ${size}px "${fonts.title}", sans-serif`;
@@ -490,7 +551,7 @@ function layoutDestaque(ctx, { slide, profile, pal, fonts, area }) {
 
 // Layout "passos": 01, 02, 03… com rótulo e texto.
 function layoutPassos(ctx, { slide, profile, pal, fonts, area }) {
-  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: area.y, width: area.w, maxHeight: 180, maxSize: 72, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: area.y, width: area.w, maxHeight: 180, maxSize: 72, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
   const sub = textBlock(ctx, slide?.body || '', { x: area.x, y: tr.bottom + 28, width: area.w, maxHeight: 140, maxSize: 36, minSize: 30, lineHeight: 1.4, font: fonts.body, weight: 400, color: pal.muted, boldColor: pal.fg });
   const steps = (slide?.steps || []).slice(0, 4);
   if (!steps.length) return tr.overflow || sub.overflow;
@@ -528,7 +589,7 @@ function layoutImagem(ctx, { slide, profile, pal, fonts, area, assets, preview }
     if (img) drawCover(ctx, img, box, slide.image);
     else if (preview) drawImagePlaceholder(ctx, box, pal, fonts);
     const textArea = { x: area.x, y: box.y + box.h + 48, w: area.w, h: area.h - box.h - 48 };
-    const tr = textBlock(ctx, titleText(slide, profile), { x: textArea.x, y: textArea.y, width: textArea.w, maxHeight: textArea.h * 0.45, maxSize: 64, minSize: 48, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+    const tr = textBlock(ctx, titleText(slide, profile), { x: textArea.x, y: textArea.y, width: textArea.w, maxHeight: textArea.h * 0.45, maxSize: 64, minSize: 48, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
     const br = textBlock(ctx, slide?.body || '', { x: textArea.x, y: tr.bottom + 28, width: textArea.w, maxHeight: textArea.y + textArea.h - tr.bottom - 28, maxSize: 38, minSize: 30, lineHeight: 1.4, font: fonts.body, weight: 400, color: pal.fg, boldColor: pal.hl });
     return tr.overflow || br.overflow;
   }
@@ -538,11 +599,11 @@ function layoutImagem(ctx, { slide, profile, pal, fonts, area, assets, preview }
     if (img) drawCover(ctx, img, box, slide.image);
     else if (preview) drawImagePlaceholder(ctx, box, pal, fonts);
     const textArea = { x: area.x, y: area.y, w: colW, h: area.h };
-    const t = textBlock(ctx, titleText(slide, profile), { x: 0, y: 0, width: colW, maxHeight: area.h * 0.45, maxSize: 60, minSize: 44, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl, measureOnly: true });
+    const t = textBlock(ctx, titleText(slide, profile), { x: 0, y: 0, width: colW, maxHeight: area.h * 0.45, maxSize: 60, minSize: 44, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl, measureOnly: true });
     const b = textBlock(ctx, slide?.body || '', { x: 0, y: 0, width: colW, maxHeight: area.h - t.height - 120, maxSize: 36, minSize: 30, lineHeight: 1.4, font: fonts.body, weight: 400, color: pal.fg, boldColor: pal.hl, measureOnly: true });
     const y0 = textArea.y + Math.max(0, (area.h - (34 + t.height + 40 + b.height)) / 2);
     accentBar(ctx, textArea.x, y0, pal);
-    const tr = textBlock(ctx, titleText(slide, profile), { x: textArea.x, y: y0 + 34, width: colW, maxHeight: area.h * 0.45, maxSize: 60, minSize: 44, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+    const tr = textBlock(ctx, titleText(slide, profile), { x: textArea.x, y: y0 + 34, width: colW, maxHeight: area.h * 0.45, maxSize: 60, minSize: 44, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
     const br = textBlock(ctx, slide?.body || '', { x: textArea.x, y: tr.bottom + 40, width: colW, maxHeight: area.h - t.height - 120, maxSize: 36, minSize: 30, lineHeight: 1.4, font: fonts.body, weight: 400, color: pal.fg, boldColor: pal.hl });
     return tr.overflow || br.overflow;
   }
@@ -564,11 +625,11 @@ function layoutImagem(ctx, { slide, profile, pal, fonts, area, assets, preview }
     drawImagePlaceholder(ctx, { x: area.x, y: area.y, w: area.w, h: area.h * 0.45 }, pal, fonts);
   }
   const isCapa = slide.role === 'capa';
-  const t = textBlock(ctx, titleText(slide, profile), { x: 0, y: 0, width: area.w, maxHeight: area.h * 0.38, maxSize: isCapa ? 96 : 76, minSize: 54, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl, measureOnly: true });
+  const t = textBlock(ctx, titleText(slide, profile), { x: 0, y: 0, width: area.w, maxHeight: area.h * 0.38, maxSize: isCapa ? 96 : 76, minSize: 54, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl, measureOnly: true });
   const b = textBlock(ctx, slide?.body || '', { x: 0, y: 0, width: area.w, maxHeight: area.h * 0.3, maxSize: 40, minSize: 32, lineHeight: 1.42, font: fonts.body, weight: 400, color: pal.fg, boldColor: pal.hl, measureOnly: true });
   const y0 = area.y + area.h - (34 + t.height + 40 + b.height);
   accentBar(ctx, area.x, y0, pal);
-  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: y0 + 34, width: area.w, maxHeight: area.h * 0.38, maxSize: isCapa ? 96 : 76, minSize: 54, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: y0 + 34, width: area.w, maxHeight: area.h * 0.38, maxSize: isCapa ? 96 : 76, minSize: 54, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
   const br = textBlock(ctx, slide?.body || '', { x: area.x, y: tr.bottom + 40, width: area.w, maxHeight: area.h * 0.3, maxSize: 40, minSize: 32, lineHeight: 1.42, font: fonts.body, weight: 400, color: pal.fg, boldColor: pal.hl });
   return tr.overflow || br.overflow;
 }
@@ -598,7 +659,7 @@ function shortSource(src, n) {
 // Conclusão: pergunta em destaque e fontes resumidas (ou aviso do slide de fontes).
 function layoutConclusao(ctx, { slide, content, profile, pal, fonts, area }) {
   const sources = (content?.sources || []).filter((s) => s?.url?.trim() || s?.title?.trim());
-  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: area.y, width: area.w, maxHeight: 240, maxSize: 76, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+  const tr = textBlock(ctx, titleText(slide, profile), { x: area.x, y: area.y, width: area.w, maxHeight: 240, maxSize: 76, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
   const br = textBlock(ctx, slide?.body || '', { x: area.x, y: tr.bottom + 32, width: area.w, maxHeight: 230, maxSize: 40, minSize: 32, lineHeight: 1.42, font: fonts.body, weight: 400, color: pal.muted, boldColor: pal.fg });
   let y = br.bottom + 48;
   let overflow = tr.overflow || br.overflow;
@@ -607,7 +668,7 @@ function layoutConclusao(ctx, { slide, content, profile, pal, fonts, area }) {
     const pad = 36;
     const m = textBlock(ctx, cta, { x: 0, y: 0, width: area.w - pad * 2, maxHeight: 220, maxSize: 44, minSize: 34, lineHeight: 1.25, font: fonts.title, weight: 700, color: '#FFFFFF', boldColor: '#FFFFFF', measureOnly: true });
     const boxH = m.height + pad * 2;
-    ctx.fillStyle = pal.hl;
+    ctx.fillStyle = pal.hlFill;
     roundRect(ctx, area.x, y, area.w, boxH, 24);
     ctx.fill();
     const r = textBlock(ctx, cta, { x: area.x + pad, y: y + pad, width: area.w - pad * 2, maxHeight: 220, maxSize: 44, minSize: 34, lineHeight: 1.25, font: fonts.title, weight: 700, color: '#FFFFFF', boldColor: '#FFFFFF' });
@@ -643,7 +704,7 @@ function layoutConclusao(ctx, { slide, content, profile, pal, fonts, area }) {
 // Slide extra só com as referências, quando são muitas para a conclusão.
 function layoutFontes(ctx, { content, profile, pal, fonts, area }) {
   const sources = (content?.sources || []).filter((s) => s?.url?.trim() || s?.title?.trim());
-  textBlock(ctx, profile?.uppercaseTitles ? 'FONTES CONSULTADAS' : 'Fontes consultadas', { x: area.x, y: area.y, width: area.w, maxHeight: 120, maxSize: 64, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: 700, color: pal.fg, boldColor: pal.hl });
+  textBlock(ctx, profile?.uppercaseTitles ? 'FONTES CONSULTADAS' : 'Fontes consultadas', { x: area.x, y: area.y, width: area.w, maxHeight: 120, maxSize: 64, minSize: 52, lineHeight: 1.1, font: fonts.title, weight: fonts.titleWeight, boldWeight: 700, boldStyle: fonts.titleBoldStyle, color: pal.fg, boldColor: pal.hl });
   let y = area.y + 130;
   const measure = (s) => {
     ctx.font = `400 30px "${fonts.body}", sans-serif`;
@@ -683,8 +744,9 @@ export function renderSlide(ctx, options) {
   const assets = options.assets || { images: new Map(), logo: options.logoImg || null, logoLight: null };
   const slide = item.slide || {};
   const fonts = resolveFonts(profile);
-  const theme = slideTheme(slide, item.kind);
-  const pal = paletteFor(profile, theme);
+  const style = content?.style || null;
+  const theme = slideTheme(slide, item.kind, style);
+  const pal = paletteFor(profile, theme, style);
 
   // Sem imagem no export, as composições com imagem viram texto.
   let layout = slide.layout || 'texto';
@@ -714,6 +776,6 @@ export function renderSlide(ctx, options) {
   else overflow = layoutTexto(ctx, args);
 
   drawHeader(ctx, { profile, pal, fonts, position, total });
-  drawFooter(ctx, { profile, pal, fonts, theme, assets, big });
+  drawFooter(ctx, { profile, pal, fonts, theme, assets, big, network: options.network });
   return { overflow: Boolean(overflow) };
 }

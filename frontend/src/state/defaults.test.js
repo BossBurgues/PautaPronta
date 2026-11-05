@@ -15,6 +15,8 @@ describe('migrateProfile', () => {
     expect(p.colors.muted).toBeUndefined();
     expect(p.colors.bg).toBe('#FFFFFF');
     expect(p.colors.accent).toBe('#FF024B');
-    expect(p.handle).toBe('@x');
+    expect(p.handleLinkedin).toBe('@x');
+    expect(p.handleInstagram).toBe('@x');
+    expect(p.handle).toBeUndefined();
   });
 });

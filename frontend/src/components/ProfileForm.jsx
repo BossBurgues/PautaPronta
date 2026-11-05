@@ -135,18 +135,35 @@ export default function ProfileForm({ profile = DEFAULT_PROFILE, logoImg, onUpda
           <div className="generate-options-grid">
             <div className="form-group">
               <div className="form-label-row">
-                <label htmlFor="profile-handle">@ do rodapé</label>
-                <span className="char-counter">{(profile.handle || '').length} / 40</span>
+                <label htmlFor="profile-handle-li">@ no LinkedIn</label>
+                <span className="char-counter">{(profile.handleLinkedin || '').length} / 40</span>
               </div>
               <input
-                id="profile-handle"
+                id="profile-handle-li"
                 type="text"
                 maxLength={40}
-                value={profile.handle || ''}
-                onChange={(e) => onUpdateProfile({ handle: e.target.value.slice(0, 40) })}
-                placeholder="@perfil da conta onde vai publicar"
+                value={profile.handleLinkedin || ''}
+                onChange={(e) => onUpdateProfile({ handleLinkedin: e.target.value.slice(0, 40) })}
+                placeholder="Vai no rodapé do PDF"
               />
             </div>
+            <div className="form-group">
+              <div className="form-label-row">
+                <label htmlFor="profile-handle-ig">@ no Instagram</label>
+                <span className="char-counter">{(profile.handleInstagram || '').length} / 40</span>
+              </div>
+              <input
+                id="profile-handle-ig"
+                type="text"
+                maxLength={40}
+                value={profile.handleInstagram || ''}
+                onChange={(e) => onUpdateProfile({ handleInstagram: e.target.value.slice(0, 40) })}
+                placeholder="Vai no rodapé das imagens PNG"
+              />
+            </div>
+          </div>
+
+          <div className="generate-options-grid">
             <div className="form-group">
               <div className="form-label-row">
                 <label htmlFor="profile-kicker">Rótulo do topo (opcional)</label>
@@ -176,6 +193,15 @@ export default function ProfileForm({ profile = DEFAULT_PROFILE, logoImg, onUpda
               <select id="profile-highlight" value={profile.highlight || 'accent'} onChange={(e) => onUpdateProfile({ highlight: e.target.value })}>
                 <option value="accent">Principal</option>
                 <option value="accent2">Secundária</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="profile-title-weight" className="form-label-row">
+                <span>Peso dos títulos</span>
+              </label>
+              <select id="profile-title-weight" value={profile.titleWeight || 'bold'} onChange={(e) => onUpdateProfile({ titleWeight: e.target.value })}>
+                <option value="bold">Negrito (lê melhor no feed)</option>
+                <option value="light">Fino, como no site da HOTMILK</option>
               </select>
             </div>
             <label className="checkbox-label profile-check">

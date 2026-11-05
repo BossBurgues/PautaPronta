@@ -23,7 +23,7 @@ export function slugify(text) {
 /**
  * Renderiza o item `index` de getRenderSlides (slides + slide extra de fontes) em 1080×1350.
  */
-export async function renderToCanvas(content, index, profile, logoImg) {
+export async function renderToCanvas(content, index, profile, logoImg, network) {
   const canvas = document.createElement('canvas');
   canvas.width = SLIDE_W;
   canvas.height = SLIDE_H;
@@ -32,7 +32,7 @@ export async function renderToCanvas(content, index, profile, logoImg) {
   await ensureFonts(profile);
   const list = getRenderSlides(content);
   const assets = await loadSlideAssets(content, profile, logoImg);
-  renderSlide(ctx, { item: list[index], position: index + 1, total: list.length, content, profile, assets });
+  renderSlide(ctx, { item: list[index], position: index + 1, total: list.length, content, profile, assets, network });
   return canvas;
 }
 
@@ -76,7 +76,7 @@ export async function exportPngZip(content, profile, logoImg) {
   const slides = getRenderSlides(content);
 
   for (let i = 0; i < slides.length; i++) {
-    const canvas = await renderToCanvas(content, i, profile, logoImg);
+    const canvas = await renderToCanvas(content, i, profile, logoImg, 'instagram');
     const blob = await canvasToBlob(canvas, 'image/png');
     const num = String(i + 1).padStart(2, '0');
     zip.file(`slide-${num}.png`, blob);
@@ -107,12 +107,13 @@ export async function exportPdf(content, profile, logoImg) {
   const slides = getRenderSlides(content);
 
   for (let i = 0; i < slides.length; i++) {
-    const canvas = await renderToCanvas(content, i, profile, logoImg);
+    const canvas = await renderToCanvas(content, i, profile, logoImg, 'linkedin');
     if (i > 0) {
       pdf.addPage([1080, 1350], 'portrait');
     }
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
-    pdf.addImage(imgData, 'JPEG', 0, 0, 1080, 1350);
+    // PNG: sem perda de qualidade (texto nítido no LinkedIn); 'FAST' comprime sem degradar.
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', 0, 0, 1080, 1350, undefined, 'FAST');
   }
 
   pdf.save(filename);
@@ -141,7 +142,7 @@ export async function exportWhatsappMosaic(content, profile, logoImg) {
   mCtx.fillRect(0, 0, mosaicCanvas.width, mosaicCanvas.height);
 
   for (let i = 0; i < n; i++) {
-    const canvas = await renderToCanvas(content, i, profile, logoImg);
+    const canvas = await renderToCanvas(content, i, profile, logoImg, 'instagram');
     const col = i % 2;
     const row = Math.floor(i / 2);
     const destX = col * cellW;
@@ -160,7 +161,7 @@ export async function exportWhatsappMosaic(content, profile, logoImg) {
 export async function exportSingleSlide(content, index, profile, logoImg) {
   const num = String(index + 1).padStart(2, '0');
   const filename = `slide-${num}.png`;
-  const canvas = await renderToCanvas(content, index, profile, logoImg);
+  const canvas = await renderToCanvas(content, index, profile, logoImg, 'instagram');
   const blob = await canvasToBlob(canvas, 'image/png');
   downloadBlob(blob, filename);
   return filename;
