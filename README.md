@@ -277,6 +277,9 @@ Também dá para entrar no modo assistido a qualquer momento pelo botão **Modo 
 - **Hospedagem**: Cloudflare Pages e Workers no plano gratuito.
 - **IA**: Google AI Studio no nível gratuito, **sem conta de faturamento vinculada**. Quando a cota acaba, o Google
   responde "limite atingido" (erro 429) em vez de cobrar, e o app cai no modo assistido.
+- **Busca na web**: no plano gratuito do Gemini a busca na web tem cota zero (erro 429). Quando ela está ligada,
+  o Worker tenta, e se não houver cota gera só com os feeds e mostra um aviso. Para pautas específicas, o modo
+  assistido (ChatGPT/Copilot com pesquisa) dá resultado melhor.
 - **Limite próprio**: o Worker aceita no máximo `DAILY_LIMIT` gerações por dia (padrão 20), para proteger a cota.
 - As contas ficam no nome do Lucivandro e **sem cartão cadastrado**. Checklist em
   [`docs/SETUP_CONTAS.md`](docs/SETUP_CONTAS.md).
@@ -384,14 +387,30 @@ Encontrou uma falha? Não abra issue pública com detalhes: avise o mantenedor d
 
 ## 10. Publicando (deploy)
 
-O app vai para o Cloudflare (plano gratuito). O passo a passo completo, incluindo criação do KV e dos secrets, está em
-[`prompts/fase-08-deploy-entrega.md`](prompts/fase-08-deploy-entrega.md). Resumo:
+O app está publicado no Cloudflare (plano gratuito), na conta do Lucivandro:
 
-1. `npx wrangler login` (conta do Lucivandro).
-2. Criar o KV, colocar o `id` no `worker/wrangler.toml` e cadastrar os secrets `GEMINI_API_KEY` e `ACCESS_TOKEN`.
-3. Publicar o Worker e anotar a URL `https://pauta-pronta-api.<subdominio>.workers.dev`.
-4. Publicar o frontend no Pages a partir da branch `prod`.
-5. Colocar a URL do Pages em `ALLOWED_ORIGIN` e publicar o Worker de novo.
+| Parte | Endereço |
+|---|---|
+| Site (Pages) | https://pauta-pronta.pages.dev |
+| API (Worker) | https://pauta-pronta-api.lucivandro.workers.dev |
+
+O `account_id`, o id do KV e o `ALLOWED_ORIGIN` já estão no `worker/wrangler.toml`, e a URL da API está em
+`frontend/.env.production`. Os secrets (`GEMINI_API_KEY` e `ACCESS_TOKEN`) ficam só no Cloudflare.
+
+Para publicar uma nova versão, a partir da branch `prod` atualizada e na raiz do projeto (PowerShell):
+
+```powershell
+npx wrangler login                       # só se a sessão tiver expirado (conta do Lucivandro)
+$env:CLOUDFLARE_ACCOUNT_ID = "eb88461c7c6932c22fb6a6deb874ee3a"
+npm run deploy:worker                    # API
+npm run deploy:front                     # site
+npm run smoke -- --base https://pauta-pronta-api.lucivandro.workers.dev   # conferência (token em $env:PP_TOKEN)
+```
+
+A linha do `CLOUDFLARE_ACCOUNT_ID` é necessária porque o login do Wrangler não recebe a permissão de ler a conta;
+sem ela, os comandos do Pages e do KV falham com "Failed to automatically retrieve account IDs". Ela vale até
+fechar o terminal. O passo a passo da primeira publicação (KV, secrets, projeto do Pages) está em
+[`prompts/fase-08-deploy-entrega.md`](prompts/fase-08-deploy-entrega.md).
 
 O Cloudflare Pages já entrega o site em **HTTPS** automaticamente (`https://<projeto>.pages.dev`). Um domínio próprio
 pode ser apontado depois, pelo painel do Pages.
@@ -403,7 +422,8 @@ pode ser apontado depois, pelo painel do Pages.
 | Quero… | Onde mexer |
 |---|---|
 | Trocar a chave da IA | `npx wrangler secret put GEMINI_API_KEY` (dentro de `worker/`) |
-| Trocar o modelo da IA | `GEMINI_MODEL` em `worker/wrangler.toml` (confira os modelos gratuitos no AI Studio) |
+| Trocar o modelo da IA | `GEMINI_MODEL` em `worker/wrangler.toml` (padrão `gemini-3.5-flash`; o `gemini-2.5-flash` não aceita contas novas). Para usar o 3.8 quando ele estiver menos disputado: `GEMINI_MODEL = "gemini-3.8-flash"` e `GEMINI_FALLBACK_MODEL = "gemini-3.5-flash"` |
+| Modelo reserva | `GEMINI_FALLBACK_MODEL` (padrão `gemini-3.5-flash-lite`), usado quando o principal responde "alta demanda" (503) |
 | Trocar o token de acesso | `npx wrangler secret put ACCESS_TOKEN` e atualizar na aba Configurações |
 | Mudar o limite diário | `DAILY_LIMIT` em `worker/wrangler.toml` |
 | Mudar os feeds das sugestões semanais | `DEFAULT_FEEDS` em `worker/wrangler.toml` |
@@ -424,6 +444,7 @@ Depois de mexer no `wrangler.toml`, publique o Worker de novo para valer em prod
 |---|---|---|
 | "Token inválido" | Token da aba Configurações diferente do `ACCESS_TOKEN` | Copie o token de novo, sem espaços |
 | "A cota gratuita acabou por hoje" | Limite do Google ou `DAILY_LIMIT` atingido | Use o modo assistido; a cota volta no dia seguinte |
+| "A busca na web não está disponível agora" | Plano gratuito do Gemini sem cota de busca | Normal: o carrossel usa os feeds. Para um tema específico, use o modo assistido |
 | "A IA respondeu com erro" | Modelo indisponível ou chave inválida | Veja o log do Worker (`npm run dev:worker` ou painel do Cloudflare) |
 | "Sem conexão com o servidor" | Worker desligado ou URL da API errada | Confira a aba Configurações e se o Worker está rodando |
 | "Não consegui ler" um feed | Site fora do ar ou bloqueando | Troque o feed na aba Configurações; a geração continua com os outros |

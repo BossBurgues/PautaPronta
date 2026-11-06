@@ -5,7 +5,7 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 
 ## Pré-requisitos (você)
 - [ ] Levantamento presencial: logo, cores, fonte, @, fontes confiáveis, temas, tom de voz
-- [ ] Contas criadas sem cartão (só a partir da F4) — `docs/SETUP_CONTAS.md`
+- [x] Contas criadas (06/11): Google AI Studio sem cartão; Cloudflare do Lucivandro (já tinha cartão por causa do R2; o Pauta Pronta só usa a cota gratuita)
 
 ---
 
@@ -62,7 +62,7 @@ O workflow `/proxima-fase` usa este arquivo para saber qual fase vem a seguir.
 
 ### 🏁 Marco M2 — 5 temas reais gerados localmente
 - [x] Feito em 05/11/2026 pelo modo assistido (Claude como assistente), com fontes lidas na origem — `docs/testes-temas/`
-- [ ] Repetir 1 ou 2 temas no modo online quando existir a chave do Gemini do Lucivandro
+- [x] Geração online testada em produção (06/11) com a chave do Lucivandro
 - Ajustes:
   - conclusão: fontes longas usam até 2 linhas e terminam em "…" (antes eram cortadas sem aviso)
 
@@ -115,10 +115,12 @@ Base: `docs/Avaliacao_Design_PautaPronta preenchida.pdf` e `docs/Exemplodeartigo
 - [ ] **Validação humana**
 
 ## F8 — Deploy e entrega · `prompts/fase-08-deploy-entrega.md`
-- [ ] Scripts de deploy e `.env.production.example`
-- [ ] README final
-- [ ] Deploy do Worker e do Pages (usuário)
-- [ ] Smoke em produção
+- [x] Scripts de deploy e `.env.production.example`
+- [x] README com endereços, deploy e manutenção
+- [x] Deploy do Worker e do Pages (06/11): https://pauta-pronta.pages.dev e https://pauta-pronta-api.lucivandro.workers.dev
+- [x] Smoke em produção: casos 1–6 ✅ e geração real ✅ (sem busca na web: cota zero no plano gratuito, gera com os feeds)
+- Ajustes do deploy: modelo `gemini-3.5-flash` (o 2.5 não aceita contas novas), modelo reserva no 503, fallback
+  para os feeds quando a busca na web não tem cota, `CLOUDFLARE_ACCOUNT_ID` no terminal para o Pages
 - [ ] `docs/TESTES_ACEITACAO.md` completo
 - [ ] **Validação humana**
 
