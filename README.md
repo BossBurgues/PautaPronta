@@ -14,7 +14,9 @@ Você revisa, ajusta o que quiser e exporta (PDF, imagens ou WhatsApp). **A publ
 o app nunca posta nada sozinho.
 
 > Projeto de prática extensionista (ADS — PUCPR), desenvolvido para o Lucivandro Luz.
-> Custo para usar: **R$ 0** (só serviços gratuitos, sem cartão cadastrado).
+> Custo para usar: **R$ 0** (só os planos gratuitos do Cloudflare e do Google AI Studio).
+
+**Usar agora:** https://pauta-pronta.pages.dev · **Passo a passo com prints:** [`docs/GUIA_DE_USO.md`](docs/GUIA_DE_USO.md)
 
 ---
 
@@ -59,7 +61,8 @@ flowchart LR
 
 1. Você digita um tema e clica em **Gerar**.
 2. O frontend envia o tema ao Worker, junto com o seu token de acesso.
-3. O Worker confere o token e o limite do dia, lê os feeds RSS cadastrados e pede à IA o carrossel.
+3. O Worker confere o token e o limite do dia, lê os feeds RSS cadastrados e pede à IA o carrossel. Com
+   **Buscar na web** ligado, ele tenta também a pesquisa do Google (sem cota no plano gratuito; veja a seção 6).
 4. A resposta é validada (quantidade de slides, tamanho dos textos, fontes). Se vier fora do formato,
    o Worker pede uma correção à IA uma vez.
 5. Cada fonte citada é comparada com os sites realmente consultados. As que não batem aparecem com o selo
@@ -187,6 +190,8 @@ Abra `http://localhost:5173`, vá na aba **Configurações → Acesso à ferrame
 
 ## 4. Usando o app
 
+O passo a passo completo, com prints de cada tela, está no [**Guia de uso**](docs/GUIA_DE_USO.md). Resumo:
+
 O app tem cinco abas:
 
 | Aba | Para quê |
@@ -281,8 +286,10 @@ Também dá para entrar no modo assistido a qualquer momento pelo botão **Modo 
   o Worker tenta, e se não houver cota gera só com os feeds e mostra um aviso. Para pautas específicas, o modo
   assistido (ChatGPT/Copilot com pesquisa) dá resultado melhor.
 - **Limite próprio**: o Worker aceita no máximo `DAILY_LIMIT` gerações por dia (padrão 20), para proteger a cota.
-- As contas ficam no nome do Lucivandro e **sem cartão cadastrado**. Checklist em
-  [`docs/SETUP_CONTAS.md`](docs/SETUP_CONTAS.md).
+- As contas ficam no nome do Lucivandro. A do Google AI Studio não tem cartão, então não há como haver cobrança.
+  A do Cloudflare já tinha cartão por outro serviço (R2), mas o Pauta Pronta usa só Workers, Pages e KV no plano
+  **Free**: acima da cota as requisições falham, sem cobrança. Não ative recursos pagos (R2, Workers Paid) para o
+  projeto. Checklist em [`docs/SETUP_CONTAS.md`](docs/SETUP_CONTAS.md).
 
 ---
 
@@ -458,6 +465,7 @@ Depois de mexer no `wrangler.toml`, publique o Worker de novo para valer em prod
 
 | Documento | Conteúdo |
 |---|---|
+| [`docs/GUIA_DE_USO.md`](docs/GUIA_DE_USO.md) | Passo a passo de uso, com prints, para quem vai criar os carrosséis |
 | [`PLANO_EXECUCAO.md`](PLANO_EXECUCAO.md) | Escopo do MVP, decisões técnicas, fases, riscos |
 | [`BUILD_SPEC.md`](BUILD_SPEC.md) | Especificação original (contrato da API, schema, prompt) |
 | [`docs/DIAGRAMAS.md`](docs/DIAGRAMAS.md) | Arquitetura, sequências, telas, dados, estados |
