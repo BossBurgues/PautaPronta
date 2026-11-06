@@ -26,7 +26,8 @@ export const DEFAULT_CONFIG = {
   defaults: {
     slideCount: 5,
     formats: ['linkedin', 'instagram'],
-    useWebSearch: true,
+    // Desligada: no plano gratuito do Gemini a busca na web não tem cota (429) e o Worker cai nos feeds.
+    useWebSearch: false,
     tone: DEFAULT_TONE,
     audience: DEFAULT_AUDIENCE,
     visualFormat: DEFAULT_VISUAL_FORMAT,
