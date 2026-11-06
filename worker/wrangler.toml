@@ -5,7 +5,8 @@ compatibility_date = "2026-09-01"
 [triggers]
 crons = ["0 9 * * 1"]
 
-# Local: qualquer id funciona. Na fase 8 o usuário troca pelo id real.
+# Local: qualquer id funciona. Para o deploy, troque pelo id que
+# "npx wrangler kv namespace create KV" mostrar.
 [[kv_namespaces]]
 binding = "KV"
 id = "local-dev-placeholder"
@@ -13,6 +14,8 @@ id = "local-dev-placeholder"
 [vars]
 GEMINI_MODEL = "gemini-2.5-flash"
 DAILY_LIMIT = "20"
+# Quem pode chamar a API (CORS). Em produção: a URL do Pages, ex.:
+# "https://pauta-pronta.pages.dev,http://localhost:5173" (o localhost é opcional, para testar local).
 ALLOWED_ORIGIN = "http://localhost:5173"
 TOPICS = "IA aplicada aos negócios, inovação, PD&I, produtividade, sustentabilidade, governança de IA"
 DEFAULT_FEEDS = "https://hotmilk.com.br/feed/,https://www.nist.gov/news-events/news/rss.xml,https://www.technologyreview.com/feed/"

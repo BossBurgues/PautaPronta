@@ -1,9 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const BASE_URL = 'http://localhost:8787';
+// --base <url> testa outro endereço (ex.: o Worker em produção). Sem ele, o Worker local.
+const baseArg = process.argv.indexOf('--base');
+const BASE_URL = (baseArg > -1 ? process.argv[baseArg + 1] : 'http://localhost:8787').replace(/\/+$/, '');
 
 function loadAccessToken() {
+  // Em produção o token vem da variável PP_TOKEN, definida só no terminal de quem roda.
+  if (process.env.PP_TOKEN) return process.env.PP_TOKEN.trim();
   const varsPath = path.resolve('worker/.dev.vars');
   if (!fs.existsSync(varsPath)) {
     throw new Error('Arquivo worker/.dev.vars não encontrado. Veja docs/SETUP_CONTAS.md');

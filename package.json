@@ -11,7 +11,9 @@
     "dev:worker": "npm run dev -w worker",
     "build": "npm run build -w frontend",
     "test": "vitest run",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "deploy:worker": "npm run deploy -w worker",
+    "deploy:front": "npm run build && npx wrangler pages deploy frontend/dist --project-name pauta-pronta --branch prod"
   },
   "devDependencies": {
     "vitest": "^5.0.4"
