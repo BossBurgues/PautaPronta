@@ -13,7 +13,7 @@ Só são necessárias a partir da **Fase 4**. As fases 0 a 3 rodam sem nenhuma c
 2. Aceitar os termos (ele mesmo).
 3. **Get API key → Create API key** (num projeto novo, ex.: `pauta-pronta`).
 4. **Não** clicar em "Set up billing" / "Upgrade". Sem billing, ao passar da cota a API responde 429 e nada é cobrado.
-5. Na lista de modelos do AI Studio, anotar o nome do modelo **Flash** gratuito atual. Se não for `gemini-2.5-flash`,
+5. Na lista de modelos do AI Studio, anotar o nome do modelo **Flash** gratuito atual. Se não for `gemini-3.5-flash`,
    trocar `GEMINI_MODEL` em `worker/wrangler.toml`.
 6. Copiar a chave **direto** para o arquivo local (não cole no chat do agente):
    - copie `worker/.dev.vars.example` para `worker/.dev.vars`;

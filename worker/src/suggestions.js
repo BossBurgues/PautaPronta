@@ -5,7 +5,7 @@ import {
   GEMINI_SUGGESTIONS_SCHEMA,
 } from '../../shared/prompt.js';
 import { fetchFeeds } from './rss.js';
-import { callGemini, AiOutputError } from './gemini.js';
+import { callGemini, AiOutputError, DEFAULT_MODEL, DEFAULT_FALLBACK_MODEL } from './gemini.js';
 
 /**
  * Valida e normaliza o objeto de sugestões retornado pela IA.
@@ -98,7 +98,8 @@ export async function runWeekly(env, { throwOnError = false } = {}) {
       items,
     });
 
-    const model = env?.GEMINI_MODEL || 'gemini-2.5-flash';
+    const model = env?.GEMINI_MODEL || DEFAULT_MODEL;
+    const fallbackModel = env?.GEMINI_FALLBACK_MODEL || DEFAULT_FALLBACK_MODEL;
     const apiKey = env?.GEMINI_API_KEY;
 
     const contents = [
@@ -114,6 +115,7 @@ export async function runWeekly(env, { throwOnError = false } = {}) {
       contents,
       useWebSearch: false,
       responseSchema: GEMINI_SUGGESTIONS_SCHEMA,
+      fallbackModel,
     });
 
     let validationErrors = [];
@@ -148,6 +150,7 @@ export async function runWeekly(env, { throwOnError = false } = {}) {
         contents,
         useWebSearch: false,
         responseSchema: GEMINI_SUGGESTIONS_SCHEMA,
+        fallbackModel,
       });
 
       let retryErrors = [];

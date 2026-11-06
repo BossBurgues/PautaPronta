@@ -1,21 +1,25 @@
 name = "pauta-pronta-api"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
+# Conta Cloudflare do Lucivandro (não é segredo: só identifica a conta).
+account_id = "eb88461c7c6932c22fb6a6deb874ee3a"
+# API pública em pauta-pronta-api.lucivandro.workers.dev; sem URLs de prévia por versão.
+workers_dev = true
+preview_urls = false
 
 [triggers]
 crons = ["0 9 * * 1"]
 
-# Local: qualquer id funciona. Para o deploy, troque pelo id que
-# "npx wrangler kv namespace create KV" mostrar.
+# KV de produção (criado com "npx wrangler kv namespace create KV"). Em "wrangler dev" o KV é simulado localmente.
 [[kv_namespaces]]
 binding = "KV"
-id = "local-dev-placeholder"
+id = "d11da81580c74492993c225589763578"
 
 [vars]
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-3.5-flash"
 DAILY_LIMIT = "20"
 # Quem pode chamar a API (CORS). Em produção: a URL do Pages, ex.:
 # "https://pauta-pronta.pages.dev,http://localhost:5173" (o localhost é opcional, para testar local).
-ALLOWED_ORIGIN = "http://localhost:5173"
+ALLOWED_ORIGIN = "https://pauta-pronta.pages.dev,http://localhost:5173"
 TOPICS = "IA aplicada aos negócios, inovação, PD&I, produtividade, sustentabilidade, governança de IA"
 DEFAULT_FEEDS = "https://hotmilk.com.br/feed/,https://www.nist.gov/news-events/news/rss.xml,https://www.technologyreview.com/feed/"
