@@ -23,6 +23,10 @@ export class AiOutputError extends Error {
 }
 
 const BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+// O gemini-2.5-flash não aceita mais contas novas (HTTP 404). Use GEMINI_MODEL no wrangler.toml para trocar.
+export const DEFAULT_MODEL = 'gemini-3.5-flash';
+// Usado só quando o modelo principal está sobrecarregado (HTTP 503). GEMINI_FALLBACK_MODEL troca.
+export const DEFAULT_FALLBACK_MODEL = 'gemini-3.5-flash-lite';
 
 export async function callGemini({
   apiKey,
@@ -30,6 +34,8 @@ export async function callGemini({
   contents,
   useWebSearch,
   responseSchema,
+  retryDelayMs = 2000,
+  fallbackModel,
 }) {
   const generationConfig = { temperature: 0.4 };
 
@@ -44,14 +50,26 @@ export async function callGemini({
     body.tools = [{ google_search: {} }];
   }
 
-  const res = await fetch(`${BASE}/${model}:generateContent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey,
-    },
-    body: JSON.stringify(body),
-  });
+  const request = (name) =>
+    fetch(`${BASE}/${name}:generateContent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
+      body: JSON.stringify(body),
+    });
+
+  let res = await request(model);
+  // 503 = modelo sobrecarregado no momento: tenta mais uma vez e, se continuar, usa o modelo reserva.
+  if (res.status === 503) {
+    await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+    res = await request(model);
+  }
+  if (res.status === 503 && fallbackModel && fallbackModel !== model) {
+    console.warn(`[gemini] ${model} sobrecarregado; usando ${fallbackModel}`);
+    res = await request(fallbackModel);
+  }
 
   if (res.status === 429) {
     throw new QuotaError('Cota gratuita da IA esgotada por agora.');
@@ -96,35 +114,31 @@ export async function generateCarousel({
   items,
   sites,
   useWebSearch,
+  retryDelayMs,
 }) {
-  const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const model = env.GEMINI_MODEL || DEFAULT_MODEL;
+  const fallbackModel = env.GEMINI_FALLBACK_MODEL || DEFAULT_FALLBACK_MODEL;
   const apiKey = env.GEMINI_API_KEY;
+  const warnings = [];
+  let search = Boolean(useWebSearch);
 
-  const prompt = buildPrompt({
-    theme,
-    slideCount,
-    tone,
-    audience,
-    visualFormat,
-    items,
-    sites,
-    useWebSearch,
-  });
+  const promptFor = (withSearch) =>
+    buildPrompt({ theme, slideCount, tone, audience, visualFormat, items, sites, useWebSearch: withSearch });
 
-  const contents = [
-    {
-      role: 'user',
-      parts: [{ text: prompt }],
-    },
-  ];
+  let contents = [{ role: 'user', parts: [{ text: promptFor(search) }] }];
 
-  let result = await callGemini({
-    apiKey,
-    model,
-    contents,
-    useWebSearch,
-    responseSchema: GEMINI_RESPONSE_SCHEMA,
-  });
+  let result;
+  try {
+    result = await callGemini({ apiKey, model, contents, useWebSearch: search, responseSchema: GEMINI_RESPONSE_SCHEMA, retryDelayMs, fallbackModel });
+  } catch (err) {
+    // No plano gratuito a busca na web (grounding) tem cota própria, bem menor. Se ela acabar e houver
+    // itens de feed, gera só com os feeds em vez de mandar a pessoa para o modo assistido.
+    if (!(err instanceof QuotaError) || !search || !items?.length) throw err;
+    search = false;
+    warnings.push('A busca na web não está disponível agora (cota do plano gratuito). O carrossel usou só os feeds.');
+    contents = [{ role: 'user', parts: [{ text: promptFor(false) }] }];
+    result = await callGemini({ apiKey, model, contents, useWebSearch: false, responseSchema: GEMINI_RESPONSE_SCHEMA, retryDelayMs, fallbackModel });
+  }
 
   let totalGrounding = [...result.grounding];
 
@@ -143,7 +157,7 @@ export async function generateCarousel({
     if (validation.valid) {
       return {
         content: normalized,
-        warnings: validation.warnings,
+        warnings: [...warnings, ...validation.warnings],
         grounding: totalGrounding,
       };
     }
@@ -165,8 +179,10 @@ export async function generateCarousel({
     apiKey,
     model,
     contents,
-    useWebSearch,
+    useWebSearch: search,
     responseSchema: GEMINI_RESPONSE_SCHEMA,
+    retryDelayMs,
+    fallbackModel,
   });
 
   totalGrounding.push(...retryResult.grounding);
@@ -182,7 +198,7 @@ export async function generateCarousel({
 
     return {
       content: retryNormalized,
-      warnings: retryValidation.warnings,
+      warnings: [...warnings, ...retryValidation.warnings],
       grounding: totalGrounding,
     };
   } catch (err) {

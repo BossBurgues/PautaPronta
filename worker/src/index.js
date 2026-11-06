@@ -9,6 +9,7 @@ import {
   QuotaError,
   AiError,
   AiOutputError,
+  DEFAULT_MODEL,
 } from './gemini.js';
 import { verifySources, buildUsedSources } from './sources.js';
 import { checkToken, isOverLimit, incrementUsage } from './limits.js';
@@ -145,7 +146,7 @@ app.post('/api/generate', async (c) => {
       warnings: carousel.warnings,
       usedSources: buildUsedSources(feedResult.items, carousel.grounding),
       feedErrors: feedResult.errors,
-      model: c.env.GEMINI_MODEL || 'gemini-2.5-flash',
+      model: c.env.GEMINI_MODEL || DEFAULT_MODEL,
     });
   } catch (err) {
     if (err instanceof QuotaError) {
