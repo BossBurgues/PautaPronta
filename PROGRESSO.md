@@ -121,6 +121,7 @@ Base: `docs/Avaliacao_Design_PautaPronta preenchida.pdf` e `docs/Exemplodeartigo
 - [x] Smoke em produção: casos 1–6 ✅ e geração real ✅ (sem busca na web: cota zero no plano gratuito, gera com os feeds)
 - Ajustes do deploy: modelo `gemini-3.5-flash` (o 2.5 não aceita contas novas), modelo reserva no 503, fallback
   para os feeds quando a busca na web não tem cota, `CLOUDFLARE_ACCOUNT_ID` no terminal para o Pages
+- [x] Guia de uso com prints (`docs/GUIA_DE_USO.md`) e relatório para o Conecta (local, fora do Git)
 - [ ] `docs/TESTES_ACEITACAO.md` completo
 - [ ] **Validação humana**
 

@@ -352,7 +352,7 @@ export default function GenerateForm({
               <span className="toggle-text">Buscar na web</span>
             </label>
             <span className="toggle-hint">
-              Pesquisa fontes recentes, priorizando os seus sites de referência. Usa mais da cota gratuita.
+              Pesquisa fontes recentes nos seus sites de referência. No plano gratuito do Gemini ela costuma não ter cota: aí o carrossel é feito só com os feeds. Para um tema bem específico, prefira o modo assistido.
             </span>
           </div>
 
